@@ -474,18 +474,9 @@ PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time cha
   <p class="why"><span class="arrow">→</span> the REST-purist version: relations as links, the client does the joins. <mark>4,400+ HTTP requests</mark> for one screen.</p>
   <div class="act">act 1 · easy part</div>
   <aside class="notes-src">"Pick your poison: nine thousand queries in one request, or four thousand HTTP requests."
+  "You don't fix N+1 with a smarter ORM trick. <b>You ask the database the question the screen asks.</b> And tests assert the query count." Then: "Three decisions. Now let me put them in one picture."
   <b>If asked about time:</b> loading the same data through entities took 1.9 s in a CLI script on a local Postgres (~0.2 ms per query), <i>without</i> HTTP, security or the serializer. With the DB on another host it's 5–9 s from the queries alone. The 4,400+ HTTP requests were counted, not timed (78 pages + 2,159 puzzles + 2,159 statistics).
   Method: benchmark/crud/crud-results.php, content/crud-vs-read-model.md.</aside>
-</section>
-
-<section class="slide s-image">
-  <h2 class="visually-hidden">N+1</h2>
-  <img src="assets/memes/n-plus-one-1440.webp"
-       srcset="assets/memes/n-plus-one-960.webp 960w, assets/memes/n-plus-one-1440.webp 1440w, assets/memes/n-plus-one-1920.webp 1920w"
-       sizes="100vw" alt="A person carrying one puzzle piece across a huge warehouse" width="1920" height="1097" decoding="async">
-  <p class="cap">N+1: walking to the box for <mark>every single piece</mark></p>
-  <div class="act">act 1 · easy part</div>
-  <aside class="notes-src">"You don't fix N+1 with a smarter ORM trick. <b>You ask the database the question the screen asks.</b> And tests assert the query count." Reset. "Three decisions. Now let me put them in one picture."</aside>
 </section>
 
 <section class="slide">

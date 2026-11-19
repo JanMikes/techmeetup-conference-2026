@@ -301,3 +301,4 @@ The user confirmed that the cold-open flow works: intro → today's endpoint (Cl
   - "example endpoint" replaces "million-dollar endpoint" outside the cold open
 - The two HOUR 1 slides are merged: composer require + route import + the trimmed config on one slide.
 - The ⚠ DISCLAIMER (highly opinionated, CQS) moved from the cold open to right after "WHY IT HURTS IN YEAR 2" (its "ONE MODEL" row is the hook), before "so why did mine take one day?".
+- The N+1 meme is cut; its bridge line ("ask the database the question the screen asks… one picture") moved to the notes of MEASURED.
