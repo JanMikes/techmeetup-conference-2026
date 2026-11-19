@@ -707,3 +707,7 @@ a.quiet:hover { color: var(--green); }
   .flow-row.flow-3 { grid-template-columns: 1fr; }
   .flow-3 .flow-cell { font-size: 0.8rem; }
 }
+
+/* act openers: one line saying what the act covers */
+.agenda { font-size: 1.7rem; color: var(--fg-soft); letter-spacing: 0.02em; margin-top: 0.4rem; }
+@media (pointer: coarse), (max-width: 860px) { .agenda { font-size: 1rem; } }

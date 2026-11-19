@@ -256,3 +256,30 @@ Backup of the pre-reorder deck: scratchpad `index.before-reorder.html` (temporar
 - Slides 4+5 merged: the PR #477 screenshot with "IT WORKS. 4 min 5 s · CI green ✓" (PR, tests and lines in the small line). Deck is 115 slides.
 - Removed: AUGUST 2024 (Dummy endpoint), AUTHENTICATION V0 (?token=), FEB 2026 one-day slide. Timeline drops AUG 2024; FEB 2026 reads "API Platform. in one day, with Claude." Deck is 112 slides.
 - Decision 1 + "0 entities" merged into one slide (the zero is a click). Deck is 111 slides.
+
+## Iteration 7: tier 1 cuts + story review (89 slides, about 43–45 min). This supersedes the earlier maps.
+
+Each chapter only uses what an earlier one explained. The promise (11) maps the three acts, and the recap (87) closes them.
+
+| Slides | Chapter | Covers | Hands over with… |
+|---|---|---|---|
+| 1–11 | **Cold open** | Claude builds the endpoint → it works (PR, CI green) → "the interesting part isn't the AI" → MySpeedPuzzling is real → WJPC hall → Czech world champions → stack → ⚠ disclaimer (CQS) → **promise: 3 acts** | "design · production · living with it" |
+| 12–16 | **Act 1 · origin** | act opener (agenda line) → timeline (one day) → Hour 1: `composer require api`, the config → **vocabulary** (provider & processor = the HTTP touchpoint) | "by default both point at Doctrine. that default is the tutorial" |
+| 17–21 | **The default** | lesson 1 entity = resource → lesson 2 groups → puzzle hell → why it hurts in year 2 | "one model: reads and writes fight" |
+| 22 | **3 decisions** | the resource · scenarios · the read model (answers "why one day?") | |
+| 23–24 | **Decision 1** | not your entity, 0 of 32 → the PR resource DTO | |
+| 25–29 | **Decision 2** | publish vs PATCH → design from the screen → CRUD way (7 calls, crash, race) → scenario way (1 call) | "writes are scenarios, reads are screens" |
+| 30–33 | **Decision 3** | predict → 9,210 vs 7 queries → N+1 | "three decisions, one picture" |
+| 34–38 | **Putting it together** | layers diagram → end to end read (one slide) → write: input, processor, handler → "that was team A" | "five classes. is that a lot?" |
+| 39–42 | **Team A vs B** | team B (return value = response) → $userId → hands up (trade-off line) → my rule | act 2: "is it any good?" |
+| 43–49 | **Act 2 · what comes in** | agenda → filters + 422 → pagination → body validation → limit of validation → thrown in the domain → translated at the edge | |
+| 50–53 | **Docs + security** | OpenAPI as code → 3 kinds of caller → who are you → what may you do | midpoint |
+| 54–56 | **Midpoint** | remember the world champions → record math (4 endpoints) → speaking of speed | |
+| 57–63 | **Worker mode** | PHP is slow → classic PHP meme → worker mode → predict → 14× → production 23 ms → PHP alive | "BUT." |
+| 64–72 | **War story** | CineStar → 31 Dec deploy → sleep meme → inbox → one sign-on → 3 days 14 h → lesson → open loop | "how do I know before 50 emails?" |
+| 73–80 | **Act 3** | agenda → observability → the one alert → feels slow → the trap → one migration → test didn't move → what to log (agents audit) | |
+| 81–82 | **Callback** | remember the million-dollar endpoint → why 4 minutes | |
+| 83–89 | **Close** | decisions I'd undo → Auth0 (closes the loop) → wet ink → undo #2 (waiting 2 years) → as promised → spread the word → thank you | |
+
+Removed in tier 1: lessons 3+4, two years later, anemic statement, what could go wrong, PR provider, ID before dispatch, HandledStamp, the A/B table, the 422 slide, client sees, team B one line, contract first, lifecycle diagram, RPS table, silent cron, API usage, gains/losses, migration numbers, what I keep hearing, $0.00. Read ①+② merged.
+Tier 2 (later, if rehearsal is long): K merge Hour 1 slides · L merge security + cut callers · M cut CineStar + one sign-on meme · N cut the midpoint.

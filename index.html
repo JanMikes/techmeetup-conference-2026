@@ -166,14 +166,14 @@ FrankenPHP         <span class="dim"># worker mode</span></pre>
 
 <section class="slide">
   <h3>THE PROMISE</h3>
-  <h2>YOU'LL LEAVE<br>WITH 3 THINGS</h2>
+  <h2>3 ACTS. 3 THINGS<br>TO TAKE HOME.</h2>
   <ol class="asks">
-    <li><span class="n">1.</span><span>the resource is <mark>not your entity</mark></span></li>
-    <li><span class="n">2.</span><span>scenarios and read models</span></li>
-    <li><span class="n">3.</span><span>worker mode: how fast, and how it bites</span></li>
+    <li><span class="n">1.</span><span><b>design:</b> the resource is <mark>not your entity</mark></span></li>
+    <li><span class="n">2.</span><span><b>production:</b> errors, security, speed. and how it bites</span></li>
+    <li><span class="n">3.</span><span><b>living with it:</b> measure, alert, fix in an afternoon</span></li>
   </ol>
   <div class="act">cold open</div>
-  <aside class="notes-src">The promise. <b>The close repeats these three lines word for word.</b></aside>
+  <aside class="notes-src">The map of the talk: one line per act. <b>The close repeats these three lines.</b></aside>
 </section>
 
 <!-- ===================== ACT 1 — THE EASY PART ===================== -->
@@ -181,6 +181,7 @@ FrankenPHP         <span class="dim"># worker mode</span></pre>
 <section class="slide s-rule">
   <h3>ACT 1</h3>
   <h1>THE API WAS<br>THE <mark>EASY</mark> PART</h1>
+  <p class="agenda">design: the resource · scenarios · the read model</p>
   <div class="act">act 1 · easy part</div>
   <aside class="notes-src">"Let me tell you how this API was born. It was late. Very late."</aside>
 </section>
@@ -278,59 +279,6 @@ class Book
   <aside class="notes-src">Read the embedding quote out loud, slowly. "So whether the author ends up in the JSON depends on a string, <b>in another class</b>."</aside>
 </section>
 
-<section class="slide">
-  <h3>LESSON 3 · LOGIC IN A SAVE() DECORATOR</h3>
-  <pre class="term sm php"><span class="k">#[ORM\Entity]</span>
-<span class="k">#[ApiResource(operations: [</span>
-    new Post(
-        processor: <mark>UserPasswordHasher</mark>::class,
-        validationContext: ['groups' =&gt; ['Default', 'user:create']],
-    ),
-<span class="k">])]</span>
-class User
-{
-    private ?string <mark>$plainPassword</mark> = null;  <span class="c">// not a column. lives here anyway.</span>
-}
-
-<span class="c"># services.yaml — wraps Doctrine's persist processor</span>
-$processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
-  <p class="why"><span class="arrow">→</span> the "register" scenario became a wrapper around <i>save()</i></p>
-  <p class="source">api-platform.com/docs/symfony/user</p>
-  <div class="act">act 1 · school</div>
-  <aside class="notes-src">"A plain-text password field <b>on the entity</b>, a validation group per operation, and business logic hooked into persistence.
-  Now add 'send a welcome email', 'give the referral bonus'… all of it lands in save()."</aside>
-</section>
-
-<section class="slide">
-  <h3>LESSON 4 · …THE DOCS UN-TEACH THEMSELVES</h3>
-  <pre class="term xl bad php"><span class="k">#[ApiFilter(SearchFilter::class, …)]</span></pre>
-  <p class="why"><span class="arrow">→</span> "The legacy method using the ApiFilter attribute is <mark>not recommended</mark>."</p>
-  <p class="source">api-platform.com/docs/core/filters</p>
-  <div class="act">act 1 · school</div>
-  <aside class="notes-src">Laugh beat. "Even the docs moved on. Half the blog posts out there didn't." The replacement, QueryParameter, is in act 2.</aside>
-</section>
-
-<section class="slide">
-  <h3>TWO YEARS LATER</h3>
-  <pre class="term bad sm php"><span class="k">#[ORM\Entity]</span>
-<span class="k">#[ApiResource]</span>
-<span class="k">#[ApiFilter(SearchFilter::class, properties: ['player' =&gt; 'exact'])]</span>
-class PuzzleSolvingTime
-{
-    <span class="k">#[ORM\ManyToOne] #[Groups(['time:read', 'player:read'])]</span>
-    public Player $player;
-
-    <span class="k">#[ORM\ManyToOne] #[Groups(['time:read'])]</span>
-    public Puzzle $puzzle;     <span class="c">// → Puzzle needs groups too…</span>
-
-    <span class="k">#[Groups(['time:read'])]</span>
-    public function getSolvedTimes(): int <span class="c">// a repository in an entity?!</span>
-}</pre>
-  <p class="why"><span class="arrow">→</span> all four lessons, one class. fine for a todo app.</p>
-  <div class="act">act 1 · school</div>
-  <aside class="notes-src">"Put the lessons together and give it two years. Your database table <b>is</b> your public API. What could go wrong?" Composite example, not from any one tutorial.</aside>
-</section>
-
 <section class="slide s-image">
   <h2 class="visually-hidden">Serialization groups</h2>
   <img src="assets/memes/puzzle-hell-1440.webp"
@@ -347,7 +295,7 @@ class PuzzleSolvingTime
     <div><span class="k">SCHEMA</span>is the public contract. refactor a table → version the API</div>
     <div class="step"><span class="k">GROUPS</span>what goes out depends on strings in 12 files</div>
     <div class="step"><span class="k">RELATIONS</span>lazy loading: the N+1 is one serializer call away</div>
-    <div class="step"><span class="k">LOGIC</span>hides in persist decorators and lifecycle events</div>
+    <div class="step"><span class="k">LOGIC</span>hides in persist hooks and lifecycle events</div>
     <div class="step"><span class="k">ONE MODEL</span>reads and writes fight over one class</div>
   </div>
   <p class="why step"><span class="arrow">→</span> tutorials optimise for <mark>minute 5</mark>. you live in year 5.</p>
@@ -358,6 +306,7 @@ class PuzzleSolvingTime
 <section class="slide s-statement">
   <h3>SO WHY DID MINE TAKE ONE DAY?</h3>
   <h1>3 DECISIONS<br>FROM DAY 1.</h1>
+  <p class="after">the resource · scenarios · the read model</p>
   <p class="after">none of them made for an API.</p>
   <div class="act">act 1 · easy part</div>
   <aside class="notes-src">Answers the "why one day?" from the timeline. Thesis of act 1. Pause after "none of them".</aside>
@@ -443,16 +392,8 @@ class PuzzleSolvingTime
   Optional aside: "Puzzlers look at the picture on the box before touching a piece. I look at the screen before touching the database."</aside>
 </section>
 
-<section class="slide s-statement">
-  <h3>WHY I'M NOT A FAN OF CRUD</h3>
-  <h1>ANEMIC ENTITY.<br><mark>OVERWORKED</mark><br>CLIENT.</h1>
-  <p class="after">if the entity is the resource, where do the rules live?</p>
-  <div class="act">act 1 · easy part</div>
-  <aside class="notes-src">"Anemic model: getters, setters, no behaviour. Expose it as a resource and the rules have to live <b>somewhere</b>. Usually: in the client. Let me show you with the most important button on MySpeedPuzzling."</aside>
-</section>
-
 <section class="slide">
-  <h3>"I SOLVED IT!" · THE CRUD WAY</h3>
+  <h3>WHY NOT CRUD? · "I SOLVED IT!" THE CRUD WAY</h3>
   <pre class="term bad sm"><span class="dim"># the first try of a puzzle (the client has to move the flag itself)</span>
 GET    /puzzle_solving_times?player=me&amp;puzzle=…&amp;first_attempt=true
 PATCH  /puzzle_solving_times/{old}    {"first_attempt": false}
@@ -462,24 +403,12 @@ DELETE /wish_list_items/{id}          <span class="dim"># solved it, so not on m
 POST   /player_badges …               <span class="dim"># for me? my 3 teammates too?</span>
 PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time changed</span></span></pre>
   <p class="why step"><span class="arrow">→</span> <mark>7 calls</mark>. 0 transactions. the rules live in the mobile app.</p>
+  <p class="why step"><span class="arrow">→</span> crash after call 2? your first try is gone. two phones? two first tries.</p>
   <div class="act">act 1 · easy part</div>
-  <aside class="notes-src">Read the first four calmly, they look reasonable. <b>Click:</b> the last three get a laugh.
+  <aside class="notes-src">"Anemic entity, overworked client: expose the entity and the rules have to live <b>somewhere</b>. Usually in the client."
+  Read the first four calmly, they look reasonable. <b>Click:</b> the last three get a laugh.
   "Notify my followers… but my profile is private, so only the ones I allowed. Should the <b>phone</b> know that?"
   Illustrative URLs: this is what the entity-as-resource version would need, not our API.</aside>
-</section>
-
-<section class="slide">
-  <h3>WHAT COULD GO WRONG?</h3>
-  <div class="deflist">
-    <div><span class="k">CRASH</span>after call 2 → your first try is just… gone</div>
-    <div class="step"><span class="k">TWO PHONES</span>same second → two "first tries" of one puzzle</div>
-    <div class="step"><span class="k">PATCH LATER</span>{"seconds": 12} for 1000 pieces. who checks?</div>
-    <div class="step"><span class="k">NEW CLIENT</span>an AI agent forgets call 4. wishlist forever</div>
-  </div>
-  <p class="why step"><span class="arrow">→</span> one entity can't see the other rows. <mark>the rules are about the other rows.</mark></p>
-  <div class="act">act 1 · easy part</div>
-  <aside class="notes-src">"Every rule here is about <b>other</b> data: my other results, my teammates, the puzzle's average. A validator on one entity can't enforce any of it.
-  So you add Doctrine listeners… and now the logic is invisible instead of missing."</aside>
 </section>
 
 <section class="slide">
@@ -500,31 +429,15 @@ PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time cha
   <p class="source">src/MessageHandler/AddPuzzleSolvingTimeHandler.php · the PuzzleSolved event, 5 listeners</p>
   <div class="act">act 1 · easy part</div>
   <aside class="notes-src">"Same handler for the website form, the API, the CLI import and the AI agents. <b>Nobody can forget a step, because there are no steps.</b>"
-  Reads are the same story in reverse: the CRUD read of /me/results was 4,400+ HTTP requests (coming up in decision 3).</aside>
+  Reads are the same story in reverse: the CRUD read of /me/results was 4,400+ HTTP requests (next: decision 3).</aside>
 </section>
 
 <section class="slide s-statement">
   <h3>DECISION 3</h3>
   <h1>THE <mark>READ MODEL</mark></h1>
+  <p class="after">ask the database the question the screen asks.</p>
   <div class="act">act 1 · easy part</div>
-  <aside class="notes-src">Back to the million-dollar endpoint.</aside>
-</section>
-
-<section class="slide">
-  <h3>THE MILLION-DOLLAR ENDPOINT · THE PROVIDER</h3>
-  <p class="file">src/Api/V1/PuzzleLeaderboardResponseProvider.php · PR #477</p>
-  <pre class="term php">$attempts = match ($type) {
-    'duo'   =&gt; $this-&gt;<mark>getPuzzleSolvers</mark>-&gt;duoByPuzzleId($puzzleId),
-    'team'  =&gt; $this-&gt;getPuzzleSolvers-&gt;teamByPuzzleId($puzzleId),
-    default =&gt; $this-&gt;getPuzzleSolvers-&gt;soloByPuzzleId($puzzleId),
-};
-
-$rows = $this-&gt;puzzlesSorter-&gt;groupPlayers(
-    $this-&gt;puzzlesSorter-&gt;sortByFastest($attempts),
-);</pre>
-  <p class="why"><span class="arrow">→</span> Claude didn't write a single SQL query. the website already had it.</p>
-  <div class="act">act 1 · easy part</div>
-  <aside class="notes-src">"<b>The API is a new door into the same room.</b>"</aside>
+  <aside class="notes-src">"Writes are scenarios. Reads are screens. Let me show you what a screen costs with an entity-shaped API."</aside>
 </section>
 
 <section class="slide">
@@ -591,47 +504,24 @@ $rows = $this-&gt;puzzlesSorter-&gt;groupPlayers(
 </section>
 
 <section class="slide">
-  <h3>END TO END · READ ① THE RESOURCE</h3>
-  <p class="file">src/Api/V1/MyCollectionsResponse.php</p>
-  <pre class="term sm php"><span class="k">#[ApiResource(operations: [</span>
-    new <mark>Get</mark>(
-        uriTemplate: '/v1/me/collections',
-        security: "is_granted('ROLE_PAT') or is_granted('ROLE_OAUTH2_COLLECTIONS:READ')",
-        provider: <mark>MyCollectionsResponseProvider</mark>::class,
-    ),
-<span class="k">])]</span>
-final class MyCollectionsResponse
-{
-    public function __construct(
-        public string $playerId,
-        public int $count,
-        public array $collections,   <span class="c">// list&lt;CollectionResponse&gt;</span>
-    ) {}
-}</pre>
-  <p class="why"><span class="arrow">→</span> the URL, who may call it, and the exact JSON shape. one file.</p>
-  <div class="act">act 1 · end to end</div>
-  <aside class="notes-src">"Let's walk one read and one write all the way through. <b>My collections</b>: every puzzler has them." Trimmed slightly.</aside>
-</section>
+  <h3>END TO END · READ: RESOURCE → PROVIDER → SQL</h3>
+  <p class="file">src/Api/V1/MyCollectionsResponse.php · MyCollectionsResponseProvider.php · src/Query/GetPlayerCollections.php</p>
+  <pre class="term sm php"><span class="k">#[ApiResource(operations: [</span>new <mark>Get</mark>(
+    uriTemplate: '/v1/me/collections',
+    security: "is_granted('ROLE_PAT') or is_granted('ROLE_OAUTH2_COLLECTIONS:READ')",
+    provider: MyCollectionsResponseProvider::class,
+)<span class="k">])]</span>
+final class MyCollectionsResponse { public string $playerId; public int $count; public array $collections; }
 
-<section class="slide">
-  <h3>END TO END · READ ② PROVIDER → QUERY</h3>
-  <p class="file">src/Api/V1/MyCollectionsResponseProvider.php · src/Query/GetPlayerCollections.php</p>
-  <pre class="term sm php">public function provide(…): MyCollectionsResponse
-{
-    $playerId = <span class="c">/* the logged-in player */</span>;
-    $collections = $this-&gt;<mark>getPlayerCollections</mark>-&gt;byPlayerId($playerId);
-
-    return new MyCollectionsResponse($playerId, count(…), array_map(…));
-}
+<span class="c">// the provider: ask the read side, return the DTO</span>
+$collections = $this-&gt;<mark>getPlayerCollections</mark>-&gt;byPlayerId($playerId);
+return new MyCollectionsResponse($playerId, count(…), array_map(…));
 
 <span class="c">-- the query object: SQL straight into a DTO</span>
-SELECT id, name, description, visibility, created_at, player_id
-FROM collection
-WHERE player_id = :playerId
-ORDER BY created_at DESC</pre>
+SELECT id, name, description, visibility, … FROM collection WHERE player_id = :playerId</pre>
   <p class="why"><span class="arrow">→</span> no entity. no hydration. the website uses the <mark>same query</mark>.</p>
   <div class="act">act 1 · end to end</div>
-  <aside class="notes-src">"The provider is ten lines of glue. The query object already existed for the collections page."</aside>
+  <aside class="notes-src">"Let's walk one read and one write all the way through: <b>my collections</b>. The resource says the URL, who may call it and the JSON shape. The provider is glue. The query already existed for the collections page." Trimmed for the slide.</aside>
 </section>
 
 <section class="slide">
@@ -683,15 +573,6 @@ return new CollectionResponse(collectionId: $collectionId, …);</pre>
 </section>
 
 <section class="slide">
-  <h3>ID BEFORE DISPATCH</h3>
-  <pre class="term xl php">$id = Uuid::uuid7();                        <span class="dim"># new</span>
-$id = Uuid::uuid5($ns, $idempotencyKey);    <span class="dim"># retry → same id</span></pre>
-  <p class="why"><span class="arrow">→</span> the URL exists before the command runs. a retry returns the same resource.</p>
-  <div class="act">act 1 · end to end · CUT IF LONG</div>
-  <aside class="notes-src">Cut if long: fold it into one sentence on the previous slide.</aside>
-</section>
-
-<section class="slide">
   <h3>END TO END · WRITE ③ COMMAND → HANDLER</h3>
   <p class="file">src/MessageHandler/CreateCollectionHandler.php</p>
   <pre class="term sm php">public function __invoke(CreateCollection $message): <mark>void</mark>
@@ -732,21 +613,9 @@ readonly final class CreateCheckoutSession implements UserAware
     ) {}
 }</pre>
   <p class="why"><span class="arrow">→</span> no processor. no mapping. the message <mark>is</mark> the resource.</p>
+  <p class="why step"><span class="arrow">→</span> the handler's return value becomes the response (API Platform reads the HandledStamp)</p>
   <div class="act">act 1 · together</div>
   <aside class="notes-src">"<b>Team B.</b> Another project of mine, open source too. The command carries the API attributes, API Platform dispatches it straight to the bus."</aside>
-</section>
-
-<section class="slide">
-  <h3>HOW DOES IT RETURN A RESPONSE?</h3>
-  <p class="file">vendor/api-platform/core/src/Symfony/Messenger/Processor.php</p>
-  <pre class="term php">$handledStamp = $envelope-&gt;last(HandledStamp::class);
-if (!$handledStamp instanceof HandledStamp) {
-    return $data;                   <span class="c">// async: nothing handled yet</span>
-}
-return $handledStamp-&gt;<mark>getResult()</mark>;</pre>
-  <p class="why"><span class="arrow">→</span> the handler's return value <mark>is</mark> the response. async? send a 202.</p>
-  <div class="act">act 1 · together</div>
-  <aside class="notes-src">"API Platform already does it. Four lines in its own source."</aside>
 </section>
 
 <section class="slide">
@@ -775,22 +644,9 @@ new CreateCollection(
   <aside class="notes-src">A's risk: pass the wrong id (we did: <b>the phantom player</b>). B's risk: a half-built message; the CLI passes userId through the constructor; async workers need the ReceivedStamp guard.</aside>
 </section>
 
-<section class="slide">
-  <h3>IS IT WORTH THE EXTRA LAYER?</h3>
-  <div class="tbl-wrap"><table class="tbl">
-    <tr><th></th><th>A · processor</th><th>B · message = resource</th></tr>
-    <tr><td>files per write</td><td>~5</td><td>~3</td></tr>
-    <tr><td>mapping code</td><td>yes</td><td>none</td></tr>
-    <tr><td>API contract</td><td>decoupled</td><td>= the command</td></tr>
-    <tr><td>go async later</td><td>free</td><td>changes the API</td></tr>
-    <tr><td>$userId</td><td>explicit</td><td>automatic</td></tr>
-  </table></div>
-  <div class="act">act 1 · together</div>
-  <aside class="notes-src"><b>Read it neutrally.</b> No winner yet.</aside>
-</section>
-
 <section class="slide s-statement">
   <h1>WHAT DO<br><mark>YOU</mark> THINK?</h1>
+  <p class="after">A: more files, a decoupled contract · B: less code, the command <i>is</i> the contract</p>
   <p class="after">hands up: team A … team B …</p>
   <div class="act">act 1 · together</div>
   <aside class="notes-src"><b>Show of hands. Count it out loud.</b> "This is going to be an interesting afterparty."</aside>
@@ -810,6 +666,7 @@ new CreateCollection(
 <section class="slide s-rule">
   <h3>ACT 2</h3>
   <h1>PRODUCTION-<br>GRADE</h1>
+  <p class="agenda">validation · domain errors · docs · security · speed · and how it bites</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src">"Fine, it's cheap. Is it any good?"</aside>
 </section>
@@ -831,8 +688,10 @@ new CreateCollection(
     constraints: [new <mark>Range</mark>(min: 1, max: 100)],
 ),</pre>
   <p class="why"><span class="arrow">→</span> declared, not coded. and it lands in the OpenAPI docs.</p>
+  <p class="why step"><span class="arrow">→</span> <span class="k">?limit=1000</span> → <mark>422</mark> problem+json: "limit: This value should be between 1 and 100."</p>
   <div class="act">act 2 · production</div>
-  <aside class="notes-src">Symfony Validator constraints on query parameters. The same declaration drives validation and documentation.</aside>
+  <aside class="notes-src">Click: "I asked for a thousand. <b>It said no.</b>" problem+json (RFC 9457), every client library understands it.
+  Symfony Validator constraints on query parameters. The same declaration drives validation and documentation.</aside>
 </section>
 
 <section class="slide">
@@ -846,22 +705,6 @@ $entries = array_slice($rows, $offset, $limit);
   <p class="why"><span class="arrow">→</span> honest: hand-made. no Doctrine, so no Doctrine paginator.</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src">Bigger lists use opaque cursors. The price of no Doctrine: you write this yourself. It's five lines.</aside>
-</section>
-
-<section class="slide">
-  <h3>IT EVEN SAYS NO TO ME</h3>
-  <pre class="term warn sm"><span class="gr">$</span> curl '…/puzzles/{id}/leaderboard?limit=1000'
-
-HTTP/1.1 <mark class="warn">422</mark> Unprocessable Entity
-Content-Type: application/problem+json
-
-{
-  "status": 422,
-  "detail": "limit: This value should be between 1 and 100.",
-  "violations": [ { "propertyPath": "limit", … } ]
-}</pre>
-  <div class="act">act 2 · production</div>
-  <aside class="notes-src">"I wanted a thousand. <b>It said no.</b>" problem+json, RFC 9457 — every client library understands it.</aside>
 </section>
 
 <section class="slide">
@@ -937,38 +780,6 @@ if ($realException instanceof FirstTryAlreadyTaken) {
 </section>
 
 <section class="slide">
-  <h3>WHAT THE CLIENT SEES</h3>
-  <pre class="term warn sm"><span class="gr">$</span> curl -X POST …/api/v1/me/solving-times -d '{ …, "first_attempt": true }'
-
-HTTP/1.1 <mark class="warn">422</mark> Unprocessable Entity
-Content-Type: application/problem+json
-
-{
-  "status": 422,
-  "detail": "A first attempt of this puzzle is already recorded for you
-             (result 0199…). <mark>Send firstAttempt=false</mark>, or remove the
-             flag from that result first."
-}</pre>
-  <p class="why"><span class="arrow">→</span> an error message is UX. tell them how to fix it.</p>
-  <div class="act">act 2 · production</div>
-  <aside class="notes-src">Shortened. The detail names only the caller's own results; a co-puzzler's history stays private.</aside>
-</section>
-
-<section class="slide">
-  <h3>TEAM B? ONE LINE.</h3>
-  <pre class="term php"><span class="k">#[Post(</span>
-    messenger: 'input',
-    <mark>exceptionToStatus</mark>: [FirstTryAlreadyTaken::class =&gt; 422],
-<span class="k">)]</span>
-
-<span class="c"># or globally: api_platform.exception_to_status</span></pre>
-  <p class="why"><span class="arrow">→</span> API Platform unwraps <i>HandlerFailedException</i> for you. cheap, but a generic message.</p>
-  <div class="act">act 2 · production · CUT IF LONG</div>
-  <aside class="notes-src">vendor/api-platform/core/src/Symfony/Messenger/DispatchTrait.php unwraps the handler exception.
-  Trade-off: one line versus a tailored, actionable message. <b>Confession if asked:</b> a few of our exceptions (CompetitionNotFound) extend NotFoundHttpException: HTTP leaking into the domain. Pragmatism won there.</aside>
-</section>
-
-<section class="slide">
   <h3>OPENAPI · DOCS THAT CAN'T LIE</h3>
   <p class="file">src/Api/V1/CreateSolvingTimeInput.php</p>
   <pre class="term sm php">openapi: new OpenApiOperation(
@@ -985,22 +796,6 @@ Content-Type: application/problem+json
   <div class="act">act 2 · production</div>
   <aside class="notes-src">"Types, required fields, constraints: generated. What you write by hand is the part only you know: the edge cases."
   /api/docs with an OAuth2 "Authorize" button. <b>TODO:</b> optional Swagger UI screenshot once the stack runs.</aside>
-</section>
-
-<section class="slide">
-  <h3>CONTRACT FIRST</h3>
-  <p class="file">examples/Demo/LeaderboardProvider.php · this talk's repo</p>
-  <pre class="term sm php">for ($rank = $first; $rank &lt; $first + $limit; $rank++) {
-    $items[] = new LeaderboardEntry(
-        rank: $rank,
-        playerName: 'Puzzler #' . $rank,     <span class="c">// fake</span>
-        timeSeconds: (int) ($pieces * 2.4) + $rank * 7,
-    );
-}
-return new LeaderboardResponse(items: $items, page: $page, …);</pre>
-  <p class="why"><span class="arrow">→</span> the OpenAPI spec exists <mark>before</mark> the real data. mobile starts on day 1.</p>
-  <div class="act">act 2 · production · CUT IF LONG</div>
-  <aside class="notes-src">A provider returning fake data: same resource, same validation, same docs. Swap in the real provider later.</aside>
 </section>
 
 <section class="slide">
@@ -1053,10 +848,11 @@ if (!$this-&gt;apiPuzzleSearchLimiter-&gt;create($key)-&gt;consume()-&gt;isAccep
 </section>
 
 <section class="slide s-statement">
-  <h1>"IS SPEED PUZZLING<br>A <mark>REAL</mark> THING?"</h1>
-  <p class="after">I can see it on your faces.</p>
+  <h3>MIDPOINT BREAK</h3>
+  <h1>REMEMBER THE<br><mark>WORLD CHAMPIONS</mark>?</h1>
+  <p class="after">let's talk about how fast they are.</p>
   <div class="act">act 2 · easter egg</div>
-  <aside class="notes-src">Midpoint reset. "Yes. World records are set on our platform."</aside>
+  <aside class="notes-src">Midpoint reset, callback to the WJPC slides at the start. "World records are set on our platform."</aside>
 </section>
 
 <section class="slide">
@@ -1081,16 +877,6 @@ if (!$this-&gt;apiPuzzleSearchLimiter-&gt;create($key)-&gt;consume()-&gt;isAccep
   <p class="after">— every conference since 2008</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src">Pause. "PHP has been declared dead more times than I've lost a corner piece under the sofa."</aside>
-</section>
-
-<section class="slide">
-  <h3>CLASSIC PHP · EVERY REQUEST</h3>
-  <pre class="diagram">request ─▶ boot kernel ─▶ build container ─▶ routing
-        ─▶ API Platform metadata ─▶ <mark>your code</mark> ─▶ response
-        ─▶ <span class="rd">throw it all away</span>
-request ─▶ boot kernel ─▶ build container ─▶ …</pre>
-  <div class="act">act 2 · production</div>
-  <aside class="notes-src">Plus a fresh DB connection every time. That's where the real cost hides.</aside>
 </section>
 
 <section class="slide s-image">
@@ -1132,23 +918,6 @@ worker    ███                        <mark>3.0 ms</mark></pre>
   <p class="sub step">167 → 2,368 requests per second</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src"><b>Let it land.</b> Same image, same 4 CPUs, same DB. Only FRANKENPHP_WORKER differs.</aside>
-</section>
-
-<section class="slide">
-  <h3>ALL 8 ENDPOINTS · REQUESTS PER SECOND</h3>
-  <div class="tbl-wrap"><table class="tbl">
-    <tr><th>endpoint</th><th>classic</th><th>worker</th><th></th></tr>
-    <tr><td>ping (no DB)</td><td class="n">951</td><td class="n">5,673</td><td class="n">6.0×</td></tr>
-    <tr><td>mock leaderboard</td><td class="n">652</td><td class="n">4,675</td><td class="n">7.2×</td></tr>
-    <tr class="hl"><td>/me</td><td class="n">167</td><td class="n">2,368</td><td class="n">14.2×</td></tr>
-    <tr><td>openapi.json</td><td class="n">30</td><td class="n">137</td><td class="n">4.6×</td></tr>
-    <tr><td>puzzle detail</td><td class="n">113</td><td class="n">373</td><td class="n">3.3×</td></tr>
-    <tr><td>puzzles, 100</td><td class="n">35</td><td class="n">104</td><td class="n">3.0×</td></tr>
-    <tr><td>/me/results, 2 MB</td><td class="n">22</td><td class="n">39</td><td class="n">1.8×</td></tr>
-  </table></div>
-  <p class="why"><span class="arrow">→</span> framework boot is a fixed tax. a heavy query is still a heavy query.</p>
-  <div class="act">act 2 · production</div>
-  <aside class="notes-src">Production-like Docker on a laptop: <b>the ratios matter, not the absolute numbers.</b> Full table and method on the companion page.</aside>
 </section>
 
 <section class="slide">
@@ -1265,6 +1034,7 @@ worker    ███                        <mark>3.0 ms</mark></pre>
 <section class="slide s-rule">
   <h3>ACT 3</h3>
   <h1>LIVING<br>WITH IT</h1>
+  <p class="agenda">measure · alert · fix in an afternoon</p>
   <div class="act">act 3 · living with it</div>
   <aside class="notes-src">"So how do I know it works — before fifty emails tell me?"</aside>
 </section>
@@ -1344,27 +1114,8 @@ $this-&gt;assertSame([PuzzleFixture::PUZZLE_500_01], $this-&gt;ids(…));</pre>
   Second example if asked: ef6428f47, the unpublish check rewritten from OR to UNION: 1.8 s → ~2 ms, only the SQL changed, the internal API test untouched.</aside>
 </section>
 
-<section class="slide s-statement">
-  <h1>THE SCARIEST FAILURE<br>IS A CRON THAT<br><mark class="warn">SILENTLY STOPPED</mark></h1>
-  <p class="after">three weeks ago. ~50 cron check-ins + a dead-man's switch.</p>
-  <div class="act">act 3 · living with it</div>
-  <aside class="notes-src">Errors are loud. Jobs that don't run are silent.</aside>
-</section>
-
 <section class="slide">
-  <h3>API USAGE · WHY NOT PROMETHEUS?</h3>
-  <pre class="term">token × endpoint × status  =  cardinality <span class="rd">💥</span>
-
-kernel.request    start timer
-kernel.terminate  1 Redis write   <span class="dim"># after the response is sent</span>
-every 5 min       flush → Postgres</pre>
-  <p class="why"><span class="arrow">→</span> 25–446 requests a day. not big traffic. <mark>good</mark> traffic.</p>
-  <div class="act">act 3 · living with it · CUT IF LONG</div>
-  <aside class="notes-src">72 tokens, 9 OAuth clients. Users see their own usage in their account.</aside>
-</section>
-
-<section class="slide">
-  <h3>AI AGENTS ARE API CLIENTS TOO</h3>
+  <h3>WHAT TO LOG · AI AGENTS ARE API CLIENTS TOO</h3>
   <pre class="term sm"><span class="gr">$</span> curl -X POST …/internal-api/series/{seriesId}/<mark>publish</mark>
 
 <span class="dim">[internal_api_audit]</span> Internal API write:
@@ -1394,30 +1145,6 @@ every 5 min       flush → Postgres</pre>
   <aside class="notes-src">"AI isn't magic. It's fast at <b>consistent</b> codebases."</aside>
 </section>
 
-<section class="slide">
-  <h3>GAINS / LOSSES</h3>
-  <div class="cols">
-    <div>
-      <span class="label gr">WE GAIN</span>
-      <pre class="term">isolated domain
-one command, 4 callers
-SQL reads, no N+1
-no serialization groups
-docs that can't lie</pre>
-    </div>
-    <div>
-      <span class="label rd">WE PAY</span>
-      <pre class="term bad">more files per endpoint
-DTO → DTO mapping
-436 raw SQL queries
-hand-made pagination
-worker-mode discipline</pre>
-    </div>
-  </div>
-  <div class="act">act 3 · living with it</div>
-  <aside class="notes-src">Be honest. "<b>I'd pay it again.</b>"</aside>
-</section>
-
 <!-- ===================== CLOSE ===================== -->
 
 <section class="slide s-rule">
@@ -1445,18 +1172,6 @@ worker-mode discipline</pre>
   <aside class="notes-src">"A paid plan, a PGP key, and a <b>wet-ink executive signature</b>. In 2026. I had to find a pen."</aside>
 </section>
 
-<section class="slide">
-  <h3>THE MIGRATION · 30 JUL 2026</h3>
-  <div class="numbers">
-    <div><span class="n">10,256</span><span>users imported</span></div>
-    <div><span class="n">0</span><span>failed</span></div>
-    <div><span class="n">25 min</span><span>everyone kept their password</span></div>
-  </div>
-  <p class="why"><span class="arrow">→</span> <mark>don't rent identity</mark>: easy to move in, expensive to move out</p>
-  <div class="act">close</div>
-  <aside class="notes-src">Rehearsed on a production copy first: it caught two bugs. "<b>The best migration is the one your users never hear about.</b>"</aside>
-</section>
-
 <section class="slide s-statement">
   <h3>DECISION I'D UNDO #2</h3>
   <h1>WAITING <mark>2 YEARS</mark><br>TO DO THIS.</h1>
@@ -1470,39 +1185,23 @@ worker-mode discipline</pre>
   <h3>AS PROMISED</h3>
   <h2>3 THINGS</h2>
   <ol class="asks">
-    <li><span class="n">1.</span><span>the resource is <mark>not your entity</mark></span></li>
-    <li><span class="n">2.</span><span>scenarios and read models</span></li>
-    <li><span class="n">3.</span><span>worker mode: fast — so <mark>reset</mark></span></li>
+    <li><span class="n">1.</span><span><b>design:</b> the resource is <mark>not your entity</mark></span></li>
+    <li><span class="n">2.</span><span><b>production:</b> worker mode is fast, so <mark>reset</mark></span></li>
+    <li><span class="n">3.</span><span><b>living with it:</b> tests pin the contract</span></li>
   </ol>
   <div class="act">close</div>
   <aside class="notes-src">Word for word, as promised at the start.</aside>
 </section>
 
-<section class="slide">
-  <h3>WHAT I KEEP HEARING</h3>
-  <div class="deflist">
-    <div><span class="k">"I TRIED IT"</span>…and hated the entities as resources</div>
-    <div class="step"><span class="k">"WAIT, WHAT?"</span>…the resource can be a <mark>plain PHP object</mark>?</div>
-  </div>
-  <p class="why step"><span class="arrow">→</span> every developer I showed this to. every single one.</p>
-  <div class="act">close</div>
-  <aside class="notes-src">"I've talked about this approach with quite a few developers. <b>All of them</b> disliked entities as resources. <b>None of them</b> knew the resource doesn't have to be an entity."</aside>
-</section>
-
 <section class="slide s-statement">
   <h3>MY ONE ASK</h3>
   <h1>SPREAD<br>THE <mark>WORD</mark>.</h1>
+  <p class="after">everyone I showed this to hated entities as resources. nobody knew a resource can be a <b>plain PHP object</b>.</p>
   <p class="after">API Platform is far more powerful than its tutorials.</p>
   <p class="after">maybe the most <mark>underrated</mark> reason to love PHP in 2026.</p>
   <div class="act">close</div>
-  <aside class="notes-src">"That's the legacy I want from this talk. <b>Tell one colleague</b>: the resource is not your entity. Dig deeper than the getting-started page."</aside>
-</section>
-
-<section class="slide s-statement">
-  <h1>ESTIMATED REVENUE:<br><mark>$0.00</mark></h1>
-  <p class="after">but the API is real, the 12,500 puzzlers are real — and every line is open source. steal it.</p>
-  <div class="act">close</div>
-  <aside class="notes-src">Callback to the cold open. Smile.</aside>
+  <aside class="notes-src">"I've shown this to quite a few developers. <b>All of them</b> disliked entities as resources. <b>None of them</b> knew the resource doesn't have to be an entity."
+  "That's the legacy I want from this talk. <b>Tell one colleague</b>: the resource is not your entity. Dig deeper than the getting-started page."</aside>
 </section>
 
 <section class="slide s-closing">
