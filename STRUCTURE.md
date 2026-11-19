@@ -300,3 +300,4 @@ The user confirmed that the cold-open flow works: intro → today's endpoint (Cl
   - the callback is merged into "why it took 4 minutes"
   - "example endpoint" replaces "million-dollar endpoint" outside the cold open
 - The two HOUR 1 slides are merged: composer require + route import + the trimmed config on one slide.
+- The ⚠ DISCLAIMER (highly opinionated, CQS) moved from the cold open to right after "WHY IT HURTS IN YEAR 2" (its "ONE MODEL" row is the hook), before "so why did mine take one day?".

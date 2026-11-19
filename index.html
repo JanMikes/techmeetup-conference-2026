@@ -153,17 +153,6 @@ FrankenPHP         <span class="dim"># worker mode</span></pre>
   <aside class="notes-src">Quick read, one line each. The disclaimer comes next.</aside>
 </section>
 
-<section class="slide s-statement">
-  <h3 class="predict">⚠ DISCLAIMER</h3>
-  <h1>HIGHLY<br><mark>OPINIONATED.</mark></h1>
-  <p class="after">who knows me, knows: I'm obsessed with <b>CQS</b>.</p>
-  <p class="after">reads and writes are <mark>different models</mark>.</p>
-  <div class="act">cold open</div>
-  <aside class="notes-src">"Who knows me knows I'm a bit obsessed with CQS: separating the read model from the write model.
-  <b>This is an opinionated talk. You're allowed to boo.</b>" Wait for at least one boo or laugh.
-  Everything today follows from that one obsession: the resource isn't the entity, scenarios instead of CRUD, read models.</aside>
-</section>
-
 <!-- ===================== ACT 1 — THE EASY PART ===================== -->
 
 <section class="slide">
@@ -297,7 +286,18 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
   </div>
   <p class="why step"><span class="arrow">→</span> tutorials optimise for <mark>minute 5</mark>. you live in year 5.</p>
   <div class="act">act 1 · school</div>
-  <aside class="notes-src">"One model" is the CQS hook: "<b>Reads and writes want different things.</b> So give them different models." That's decision 1.</aside>
+  <aside class="notes-src">"One model" is the CQS hook: "<b>Reads and writes want different things.</b>" Next slide: the disclaimer, where you say what you'd do instead.</aside>
+</section>
+
+<section class="slide s-statement">
+  <h3 class="predict">⚠ DISCLAIMER</h3>
+  <h1>HIGHLY<br><mark>OPINIONATED.</mark></h1>
+  <p class="after">who knows me, knows: I'm obsessed with <b>CQS</b>.</p>
+  <p class="after">reads and writes are <mark>different models</mark>.</p>
+  <div class="act">act 1 · easy part</div>
+  <aside class="notes-src">"Who knows me knows I'm a bit obsessed with CQS: separating the read model from the write model.
+  <b>From here on it gets opinionated. You're allowed to boo.</b>" Wait for at least one boo or laugh.
+  Everything that follows comes from that one obsession: the resource isn't the entity, scenarios instead of CRUD, read models.</aside>
 </section>
 
 <section class="slide s-statement">
