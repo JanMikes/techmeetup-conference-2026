@@ -1,0 +1,663 @@
+/* ============================================================
+   BUILDING MODERN APIS IN PHP (2026 EDITION) — TechMeetup — Jan Mikeš
+   High-contrast terminal deck. No build step, no dependencies.
+   Base: the TechMeetup #43 decks (DECK-RECIPE.md).
+   ============================================================ */
+
+:root {
+  --bg:      #0a0c0d;
+  --bg-soft: #11161800;
+  --panel:   #101618;
+  --fg:      #e9ecea;
+  --dim:     #74827d;
+  --green:   #4ff08c;
+  --amber:   #ffc14d;
+  --red:     #ff6b5e;
+  --line:    #202829;
+  --fg-soft: #cfd6d2;   /* quoted prompt text: softer than --fg, still readable */
+  --overlay: #060809;   /* notes / help / jump backdrops */
+  --overlay-fg: #c6cfca;
+  --clay:    #e08a66;   /* Claude Code accent in the chat animation */
+  --mono: ui-monospace, "SF Mono", SFMono-Regular, Menlo, Monaco,
+          "Cascadia Mono", "Roboto Mono", Consolas, monospace;
+}
+
+/* Root font-size scales with BOTH viewport axes so the deck reads
+   correctly on any projector aspect ratio, not just 16:9. */
+html {
+  font-size: clamp(13px, calc(0.5vw + 0.95vh), 26px);
+  background: var(--bg);
+}
+
+/* Light theme. Same token names, so every rule below works unchanged.
+   Accents are darkened: the dark-mode green/amber fail contrast on a light ground. */
+body.light {
+  --bg:      #f5f3ee;
+  --panel:   #e7e4db;
+  --fg:      #14181a;
+  --dim:     #5c6560;
+  --green:   #06703a;
+  --amber:   #8a5200;
+  --red:     #b3261e;
+  --line:    #d6d2c7;
+  --fg-soft: #2f3639;
+  --overlay: #ffffff;
+  --overlay-fg: #2f3639;
+  --clay:    #9a4422;
+}
+html.light { background: #f5f3ee; }
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--mono);
+  font-size: 1rem;
+  line-height: 1.5;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- slide frame ---------- */
+
+.deck { position: fixed; inset: 0; }
+
+.slide {
+  position: absolute;
+  inset: 0;
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  padding: 5vh 6vw;
+  gap: 1.4rem;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.slide.is-active {
+  display: flex;
+  animation: rise 170ms ease-out;
+}
+
+@keyframes rise {
+  from { opacity: 0; transform: translateY(0.7rem); }
+  to   { opacity: 1; transform: none; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .slide.is-active { animation: none; }
+}
+
+/* Speaker-note source: read by deck.js for the N overlay, never displayed. */
+.notes-src { display: none; }
+
+/* A title that must exist for the jump index but must not be drawn.
+   display:none would hide it from deck.js's label lookup too. */
+.visually-hidden {
+  position: absolute; width: 1px; height: 1px; overflow: hidden;
+  clip-path: inset(50%); white-space: nowrap;
+}
+
+/* ---------- type ---------- */
+
+h1, h2, h3 { margin: 0; font-weight: 700; letter-spacing: -0.02em; }
+
+h1 { font-size: 4.6rem; line-height: 1.02; }
+h2 { font-size: 3.3rem; line-height: 1.08; }
+h3 { font-size: 1.5rem; line-height: 1.2; color: var(--dim); font-weight: 500; }
+
+p  { margin: 0; font-size: 1.35rem; }
+
+.sub     { color: var(--dim); font-size: 1.45rem; line-height: 1.4; }
+.byline  { color: var(--dim); font-size: 1.1rem; letter-spacing: 0.06em; }
+.small   { font-size: 1.05rem; color: var(--dim); }
+.small.bright { color: var(--fg); }   /* supporting line that carries the evidence */
+.tight   { line-height: 1.25; }
+
+mark {
+  background: none;
+  color: var(--green);
+  font-weight: 700;
+}
+mark.warn { color: var(--amber); }
+mark.bad  { color: var(--red); }
+
+.dim  { color: var(--dim); }
+.gr   { color: var(--green); }
+.am   { color: var(--amber); }
+.rd   { color: var(--red); }
+
+/* ---------- terminal block ---------- */
+
+.term {
+  font-family: var(--mono);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--green);
+  border-radius: 3px;
+  padding: 1.5rem 1.8rem;
+  margin: 0;
+  font-size: 1.5rem;
+  line-height: 1.65;
+  white-space: pre;
+  overflow-x: auto;
+  color: var(--fg);
+  tab-size: 2;
+}
+
+.term.quote  { border-left-color: var(--dim); color: var(--fg-soft); }
+.term.warn   { border-left-color: var(--amber); }
+.term.bad    { border-left-color: var(--red); }
+.term.plain  { background: none; border: none; padding: 0; }
+.term.xl     { font-size: 2rem; }
+.term.sm     { font-size: 1.2rem; }
+
+.prompt::before { content: "$ "; color: var(--green); }
+
+/* ---------- statement slides ---------- */
+
+.s-statement { justify-content: center; }
+.s-statement h1 { font-size: 5.4rem; }
+.s-statement .after { color: var(--dim); font-size: 1.5rem; margin-top: 1rem; }
+
+.h1-mid { font-size: 3.5rem; }
+.mt { margin-top: 2rem; }
+
+/* ---------- title / closing ---------- */
+
+.title-grid {
+  display: flex; align-items: center; gap: 5vw; width: 100%;
+}
+.title-grid > div { flex: 1 1 auto; min-width: 0; }
+/* The source files are already square, so the circle needs no aspect-ratio
+   or object-fit — and that combination stopped Chrome painting the image. */
+.portrait {
+  flex: 0 0 auto;
+  width: 28vw; max-width: 20rem; height: auto;
+  border-radius: 50%;
+  border: 3px solid var(--line);
+}
+
+.s-title h1 { font-size: 6.2rem; letter-spacing: -0.04em; }
+.s-title .sub { font-size: 1.8rem; max-width: 44ch; }
+.s-title .rule-line {
+  width: 7rem; height: 3px; background: var(--green); margin: 0.6rem 0;
+}
+
+.s-closing { align-items: flex-start; }
+.closing-grid {
+  display: flex; align-items: center; gap: 4rem; width: 100%; flex-wrap: wrap;
+}
+.qr {
+  width: 15rem; height: 15rem; flex: none;
+  background: #fff; padding: 0.5rem; border-radius: 6px;
+}
+.qr img { width: 100%; height: 100%; display: block; }
+.url {
+  font-size: 2.6rem; font-weight: 700; color: var(--green);
+  word-break: break-all; line-height: 1.15;
+}
+
+/* ---------- numbers slide ---------- */
+
+.numbers { display: grid; gap: 1rem; font-size: 2.6rem; line-height: 1.2; }
+/* flex row rather than an inline-block prefix, so a label that wraps stays
+   in its own column instead of falling back under the number */
+.numbers div { display: flex; gap: 1.2rem; align-items: baseline; }
+.numbers .n { color: var(--green); font-weight: 700;
+              min-width: 3ch; text-align: right; flex: none; }
+
+/* ---------- poll ladder ---------- */
+
+.ladder { display: grid; gap: 0.75rem; font-size: 2.1rem; }
+.ladder li { list-style: none; }
+.ladder .last { color: var(--green); font-weight: 700; font-size: 2.6rem; }
+ul.ladder { margin: 0; padding: 0; }
+
+/* ---------- checklist / X list ---------- */
+
+.xlist { margin: 0; padding: 0; display: grid; gap: 0.8rem; font-size: 1.9rem; }
+.xlist li { list-style: none; }
+.xlist .x { color: var(--red); margin-right: 1rem; font-weight: 700; }
+
+.deflist { display: grid; gap: 1.1rem; font-size: 1.5rem; }
+.deflist .k {
+  color: var(--amber); font-weight: 700; display: inline-block;
+  min-width: 20ch;   /* fits the longest key so all values share a column */
+}
+
+/* ---------- rule slides (the fly-by) ---------- */
+
+.s-rule { justify-content: center; gap: 1.8rem; }
+.s-rule h2 { font-size: 3.6rem; max-width: 24ch; }
+.s-rule .why {
+  font-size: 1.65rem; color: var(--fg);
+}
+.s-rule .why .arrow { color: var(--green); font-weight: 700; margin-right: 0.6rem; }
+.rule-sub { font-size: 1.15rem; color: var(--dim); margin-top: -0.6rem; }
+.diagram .note { color: var(--dim); }
+
+/* Flight/act labels are not shown on the slides. They stay in the markup
+   because the jump list reads .act for its right-hand column and for the
+   CUT IF LONG flag on slide 22. */
+.marker, .act { display: none; }
+
+/* ---------- diagram ---------- */
+
+.diagram {
+  font-size: 1.55rem; line-height: 1.5; white-space: pre;
+  color: var(--fg);
+  overflow-x: auto; max-width: 100%;
+}
+.diagram .note { color: var(--dim); }
+
+/* ---------- full-bleed image slide ----------
+   Natural dimensions + flex centring, deliberately NOT object-fit + height:auto:
+   that combination stopped Chrome painting the image in the previous deck. */
+
+.s-image { padding: 3vh 3vw; justify-content: center; align-items: center; gap: 1.2rem; }
+.s-image img {
+  max-width: 100%; max-height: 82vh;
+  width: auto; height: auto; display: block;
+}
+/* Stacked, not overlaid — the meme carries its own burned-in caption at the
+   bottom of the frame, and an absolutely positioned one lands on top of it. */
+.s-image figcaption {
+  text-align: center; color: var(--dim); font-size: 1.05rem;
+}
+
+/* ---------- compare: "by hand" vs "platform" ---------- */
+
+.compare { display: grid; grid-template-columns: 1fr auto 1fr; gap: 0.55rem 1.4rem;
+           font-size: 1.45rem; line-height: 1.3; align-items: baseline; }
+.compare .l { color: var(--fg-soft); text-align: right; }
+.compare .m { color: var(--dim); }
+.compare .r { color: var(--fg); font-weight: 700; }
+.compare .hd { color: var(--dim); font-size: 1rem; letter-spacing: 0.16em;
+               text-transform: uppercase; font-weight: 500; }
+.compare .hd.r { color: var(--green); }
+
+/* ---------- the operator transform ---------- */
+
+.morph { display: grid; gap: 0.4rem; justify-items: center; text-align: center;
+         font-size: 2.8rem; font-weight: 700; line-height: 1.15; }
+.morph .from { color: var(--dim); }
+.morph .to   { color: var(--green); }
+.morph .bar  { color: var(--dim); font-size: 2rem; font-weight: 400; }
+
+/* ---------- discussion prompts ---------- */
+
+.asks { display: grid; gap: 1.1rem; font-size: 2rem; margin: 0; padding: 0; }
+.asks li { list-style: none; display: flex; gap: 1.2rem; align-items: baseline; }
+.asks .n { color: var(--green); font-weight: 700; flex: none; }
+
+/* ---------- copy button ---------- */
+
+.copy-wrap { display: flex; align-items: center; gap: 1.2rem; margin-top: 0.4rem; }
+.copy-btn {
+  font-family: var(--mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--bg);
+  background: var(--green);
+  border: none;
+  border-radius: 3px;
+  padding: 0.7rem 1.4rem;
+  cursor: pointer;
+  letter-spacing: 0.04em;
+}
+.copy-btn:hover { filter: brightness(1.12); }
+.copy-btn.done { background: var(--amber); }
+
+a { color: var(--green); }
+a.quiet { color: var(--dim); text-decoration: none; }
+a.quiet:hover { color: var(--green); }
+
+/* ---------- chrome: progress, counter, notes, overview ---------- */
+
+.progress {
+  position: fixed; bottom: 0; left: 0; height: 3px;
+  background: var(--green); width: 0;
+  transition: width 170ms ease-out; z-index: 40;
+}
+
+.counter {
+  position: fixed; bottom: 3.2vh; right: 6vw;
+  font-size: 0.95rem; color: var(--dim); z-index: 40;
+  letter-spacing: 0.1em;
+}
+.counter .cur { color: var(--fg); }
+
+.notes {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  max-height: 42vh; overflow-y: auto;
+  background: var(--overlay);
+  border-top: 2px solid var(--amber);
+  padding: 1.4rem 6vw 2rem;
+  font-size: 1.1rem; line-height: 1.55; color: var(--overlay-fg);
+  z-index: 50; display: none;
+}
+.notes.is-open { display: block; }
+.notes b, .notes strong { color: var(--amber); }
+.notes .hdr {
+  color: var(--amber); font-size: 0.85rem; letter-spacing: 0.16em;
+  text-transform: uppercase; margin-bottom: 0.6rem;
+}
+
+.help {
+  position: fixed; inset: 0; background: var(--overlay);
+  z-index: 60; display: none; padding: 8vh 8vw;
+  font-size: 1.3rem; line-height: 2;
+}
+.help.is-open { display: block; }
+.help { color: var(--overlay-fg); }
+.help kbd {
+  background: var(--panel); border: 1px solid var(--line);
+  border-radius: 3px; padding: 0.15em 0.6em; color: var(--green);
+  font-family: var(--mono); font-weight: 700; margin-right: 0.8rem;
+  display: inline-block; min-width: 9ch; text-align: center;
+}
+
+/* jump list (press O) — a titled index beats unreadable thumbnails,
+   and slide type is rem-based so it would not scale into one anyway. */
+.jump {
+  position: fixed; inset: 0; z-index: 55;
+  background: var(--overlay);
+  padding: 6vh 8vw; overflow-y: auto;
+  display: none;
+}
+.jump.is-open { display: block; }
+.jump h4 {
+  margin: 0 0 1.5rem; font-size: 0.9rem; color: var(--dim);
+  letter-spacing: 0.18em; text-transform: uppercase; font-weight: 500;
+}
+.jump ol { margin: 0; padding: 0; list-style: none;
+           columns: 2; column-gap: 4rem; }
+.jump li {
+  display: flex; gap: 1rem; align-items: baseline;
+  padding: 0.35rem 0.6rem; margin: 0 0 0.15rem;
+  cursor: pointer; border-radius: 3px; font-size: 1.05rem;
+  break-inside: avoid;
+}
+.jump li:hover { background: var(--panel); }
+.jump li.cur { background: var(--panel); box-shadow: inset 3px 0 0 var(--green); }
+.jump li.cur .t { color: var(--green); }
+.jump .i { color: var(--dim); min-width: 2.5ch; text-align: right; flex: none; }
+.jump .t { color: var(--overlay-fg); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.jump .a { color: var(--dim); font-size: 0.8rem; margin-left: auto; flex: none; }
+
+
+/* ---------- touch / small screens ----------
+   Two problems this solves: slide type sized for a projector overflows a
+   phone, and "click anywhere to advance" gives no way back and no hint that
+   swiping works. So: a smaller scale, and real buttons. */
+
+.tapnav {
+  position: fixed; bottom: 0; left: 0; right: 0;
+  display: none; justify-content: space-between;
+  padding: 0.6rem 0.9rem 1.1rem;
+  z-index: 45; pointer-events: none;
+}
+.tapnav button {
+  pointer-events: auto;
+  font-family: var(--mono); font-size: 1.5rem; line-height: 1;
+  color: var(--fg); background: var(--panel);
+  border: 1px solid var(--line); border-radius: 999px;
+  width: 3rem; height: 3rem; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+}
+.tapnav button:disabled { opacity: 0.3; }
+.tapnav button:active { background: var(--green); color: var(--bg); }
+
+@media (pointer: coarse), (max-width: 860px) {
+  .tapnav { display: flex; }
+  .counter { bottom: auto; top: 1.2rem; right: 1.2rem; }
+  .slide { padding: 4vh 5vw 6rem; gap: 1rem; }
+
+  h1 { font-size: 2.3rem; }
+  h2 { font-size: 1.9rem; }
+  h3 { font-size: 1rem; }
+  p  { font-size: 1rem; }
+
+  .sub { font-size: 1.05rem; }
+  .byline { font-size: 0.8rem; }
+  .small { font-size: 0.85rem; }
+
+  .title-grid { flex-direction: column-reverse; align-items: flex-start; gap: 1.5rem; }
+  .portrait { width: 8rem; }
+  .s-title h1 { font-size: 2.9rem; }
+  .s-title .sub { font-size: 1.15rem; }
+  .s-statement h1 { font-size: 2.4rem; }
+  .s-statement .after { font-size: 1rem; }
+  .h1-mid { font-size: 1.9rem; }
+  .mt { margin-top: 1.2rem; }
+
+  .term { font-size: 0.85rem; padding: 1rem 1.1rem; line-height: 1.55; }
+  .term.xl { font-size: 0.95rem; }
+  /* .sm is a two-class selector, so it outranks the .term rule above and
+     would otherwise render LARGER than the mobile base. */
+  .term.sm { font-size: 0.72rem; }
+  .diagram { font-size: 0.7rem; }
+
+  .numbers { font-size: 1.5rem; }
+  .numbers div { gap: 0.7rem; }
+  .numbers .n { min-width: 2.5ch; }
+  .ladder { font-size: 1.25rem; gap: 0.5rem; }
+  .ladder .last { font-size: 1.5rem; }
+  .xlist { font-size: 1.1rem; gap: 0.5rem; }
+  .deflist { font-size: 1rem; gap: 0.8rem; }
+  .deflist .k { display: block; min-width: 0; }
+
+  .s-rule h2 { font-size: 2rem; }
+  .s-rule .why { font-size: 1.05rem; }
+  .rule-sub { font-size: 0.9rem; margin-top: -0.3rem; }
+  .s-rule { gap: 1.1rem; }
+
+
+  .closing-grid { gap: 1.5rem; }
+  .qr { width: 9rem; height: 9rem; }
+  .url { font-size: 1.5rem; }
+
+  .s-image { padding: 2vh 3vw 5rem; }
+  .s-image img { max-height: 74vh; }
+  .s-image figcaption { font-size: 0.75rem; }
+  .compare { font-size: 0.9rem; gap: 0.35rem 0.7rem; }
+  .compare .hd { font-size: 0.7rem; letter-spacing: 0.1em; }
+  .morph { font-size: 1.5rem; }
+  .morph .bar { font-size: 1.1rem; }
+  .asks { font-size: 1.15rem; gap: 0.7rem; }
+  .asks .n { }
+
+  .jump { padding: 5vh 5vw; }
+  .jump ol { columns: 1; }
+  .notes { max-height: 55vh; padding: 1rem 5vw 5rem; }
+}
+
+/* ---------- print / PDF export ---------- */
+
+
+/* ============================================================
+   ADDITIONS FOR THIS TALK
+   ============================================================ */
+
+/* ---------- step reveals (deck.js: next reveals the next .step) ---------- */
+
+.step { visibility: hidden; opacity: 0; transition: opacity 160ms ease-out; }
+.step.on { visibility: visible; opacity: 1; }
+@media (prefers-reduced-motion: reduce) { .step { transition: none; } }
+
+/* ---------- code slides ---------- */
+
+.file {
+  color: var(--dim); font-size: 1.05rem; letter-spacing: 0.02em;
+  margin-bottom: -0.8rem;
+}
+.file::before { content: "▸ "; color: var(--green); }
+.term .c  { color: var(--dim); }            /* comment */
+.term .k  { color: var(--amber); }          /* attribute / keyword */
+.term .s  { color: var(--fg-soft); }        /* string */
+.why { font-size: 1.5rem; }
+.why .arrow { color: var(--green); font-weight: 700; margin-right: 0.6rem; }
+
+/* ---------- two columns: A vs B, tutorial vs ours ---------- */
+
+.cols { display: grid; grid-template-columns: 1fr 1fr; gap: 1.6rem; align-items: start; }
+.cols > div { min-width: 0; display: flex; flex-direction: column; gap: 0.8rem; }
+.cols .term { font-size: 1.15rem; }
+.label { font-size: 1.1rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim); }
+.label.gr { color: var(--green); }
+.label.am { color: var(--amber); }
+.label.rd { color: var(--red); }
+
+/* ---------- big number / predict ---------- */
+
+.big { font-size: 9rem; font-weight: 700; line-height: 1; color: var(--green); letter-spacing: -0.04em; }
+.big.am { color: var(--amber); }
+.predict { color: var(--amber); font-weight: 700; letter-spacing: 0.16em; }
+.qmark { font-size: 6rem; color: var(--amber); font-weight: 700; line-height: 1; }
+
+/* ---------- table (narrow, phone-safe) ---------- */
+
+.tbl { border-collapse: collapse; font-size: 1.35rem; }
+.tbl th, .tbl td { padding: 0.35rem 2.2rem 0.35rem 0; text-align: left; vertical-align: baseline; }
+.tbl th { color: var(--dim); font-weight: 500; font-size: 1rem; letter-spacing: 0.1em; text-transform: uppercase; border-bottom: 1px solid var(--line); }
+.tbl td.n { text-align: right; font-variant-numeric: tabular-nums; }
+.tbl tr.hl td { color: var(--green); font-weight: 700; }
+.tbl-wrap { overflow-x: auto; max-width: 100%; }
+
+/* ---------- quote / headline ---------- */
+
+.headline {
+  border-left: 3px solid var(--red); padding: 0.4rem 0 0.4rem 1.6rem;
+  font-size: 2.4rem; font-weight: 700; line-height: 1.2; max-width: 30ch;
+}
+.source { color: var(--dim); font-size: 1rem; }
+
+/* ---------- meme slide: the image plus a big HTML caption ---------- */
+
+.s-image .cap {
+  font-size: 2.2rem; font-weight: 700; text-align: center; line-height: 1.15;
+  letter-spacing: -0.01em; max-width: 40ch;
+}
+.s-image .cap.top { margin-bottom: -0.2rem; }
+.s-image img { max-height: 66vh; border-radius: 4px; }
+
+/* ---------- the Claude Code conversation (cold open) ---------- */
+
+.claude {
+  font-family: var(--mono);
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 1.2rem 1.6rem;
+  font-size: 1.22rem;
+  line-height: 1.5;
+  height: 78vh;
+  display: flex; flex-direction: column; justify-content: flex-end;
+  overflow: hidden;
+}
+.claude .bar {
+  color: var(--dim); font-size: 1rem; border-bottom: 1px solid var(--line);
+  padding-bottom: 0.6rem; margin-bottom: auto; display: flex; gap: 1rem;
+}
+.claude .bar .logo { color: var(--clay); font-weight: 700; }
+.claude .ln { white-space: pre-wrap; margin-top: 0.35rem; }
+.claude .ln.step { display: none; }            /* lines take no space until shown */
+.claude .ln.step.on { display: block; }
+.claude .you { color: var(--fg); background: color-mix(in srgb, var(--panel) 70%, var(--line)); padding: 0.5rem 0.8rem; border-radius: 4px; margin: 0.5rem 0; }
+.claude .you::before { content: "> "; color: var(--dim); }
+.claude .ai::before { content: "● "; color: var(--fg); }
+.claude .tool::before { content: "● "; color: var(--green); }
+.claude .tool b { font-weight: 700; }
+.claude .out { color: var(--dim); padding-left: 1.4rem; }
+.claude .out::before { content: "⎿  "; }
+.claude .ok { color: var(--green); }
+.claude .final { color: var(--green); font-weight: 700; font-size: 1.4rem; margin-top: 0.8rem; }
+.claude .caret::after { content: "▌"; color: var(--clay); animation: blink 1s steps(1) infinite; }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* ---------- mobile overrides for the additions ---------- */
+
+@media (pointer: coarse), (max-width: 860px) {
+  .file { font-size: 0.75rem; margin-bottom: -0.4rem; }
+  .why { font-size: 1rem; }
+  .cols { grid-template-columns: 1fr; gap: 1rem; }
+  .cols .term { font-size: 0.75rem; }
+  .label { font-size: 0.8rem; }
+  .big { font-size: 4.5rem; }
+  .qmark { font-size: 3.5rem; }
+  .tbl { font-size: 0.85rem; }
+  .tbl th { font-size: 0.7rem; }
+  .tbl th, .tbl td { padding: 0.25rem 0.6rem 0.25rem 0; }
+  .headline { font-size: 1.4rem; padding-left: 1rem; }
+  .source { font-size: 0.8rem; }
+  .s-image .cap { font-size: 1.2rem; }
+  .s-image img { max-height: 52vh; }
+  .claude { font-size: 0.75rem; padding: 0.8rem 0.9rem; height: 72vh; }
+  .claude .bar { font-size: 0.7rem; }
+  .claude .final { font-size: 0.85rem; }
+}
+
+/* ---------- print / PDF export ---------- */
+
+@media print {
+  @page { size: 297mm 167mm; margin: 0; }
+  html { font-size: 15px; }
+  body { overflow: visible; background: var(--bg); }
+  .deck { position: static; }
+  .slide {
+    position: relative; inset: auto; display: flex !important;
+    width: 297mm; height: 167mm; page-break-after: always;
+    animation: none; break-inside: avoid;
+  }
+  .step, .claude .ln.step { visibility: visible; opacity: 1; display: block; }
+  .progress, .counter, .notes, .help, .copy-btn,
+  .tapnav, .jump { display: none !important; }
+  * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+
+/* ---------- bigger lists and tables on the projector (this deck has fewer words per slide) ---------- */
+.slide .deflist { font-size: 1.9rem; gap: 1.2rem; }
+.slide .deflist .k { min-width: 14ch; }
+.tbl { font-size: 1.8rem; }
+.tbl th { font-size: 1.1rem; }
+@media (pointer: coarse), (max-width: 860px) {
+  .slide .deflist { font-size: 1rem; gap: 0.8rem; }
+  .slide .deflist .k { min-width: 0; }
+  .tbl { font-size: 0.85rem; }
+  .tbl th { font-size: 0.7rem; }
+}
+
+/* ---------- layered flow diagram (read vs write) ---------- */
+.flow { width: 100%; display: flex; flex-direction: column; gap: 0.9rem; margin-top: 0.6rem; }
+.flow-row { display: grid; grid-template-columns: 7.5rem 1.45fr 1.25fr 1fr; gap: 1rem; align-items: stretch; }
+.flow-hd span { font-size: 1.15rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim);
+  border-bottom: 1px solid var(--line); padding-bottom: 0.4rem; }
+.flow-hd span:first-child { border-bottom: 0; }
+.flow-tag { font-family: var(--mono); font-size: 1.6rem; font-weight: 700; align-self: center; }
+.flow-tag.gr { color: var(--green); }
+.flow-tag.am { color: var(--amber); }
+.flow-cell { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; padding: 0.9rem;
+  background: var(--panel); border: 1px solid var(--line); border-radius: 6px;
+  font-family: var(--mono); font-size: 1.45rem; color: var(--fg); }
+.flow .bx { padding: 0.25rem 0.6rem; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); white-space: nowrap; }
+.flow .bx.hl { border-color: var(--green); color: var(--green); }
+.flow .ar { color: var(--dim); }
+.flow-back { padding-left: 8.5rem; font-family: var(--mono); font-size: 1.35rem; color: var(--dim); margin-top: -0.3rem; }
+.flow-back b { color: var(--fg); }
+@media (pointer: coarse), (max-width: 860px) {
+  .flow { gap: 0.6rem; }
+  .flow-hd { display: none; }
+  .flow-row { grid-template-columns: 1fr; gap: 0.4rem; }
+  .flow-tag { font-size: 0.9rem; }
+  .flow-cell { font-size: 0.75rem; padding: 0.5rem; gap: 0.3rem; }
+  .flow-cell::before { content: attr(data-l); width: 100%; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--dim); }
+  .flow-back { padding-left: 0; font-size: 0.75rem; margin-top: 0; }
+}
+@media print { .flow-row.step { display: grid; } }
+
+/* ---------- running list of rules / reactions (scenario slide) ---------- */
+.ticks { font-family: var(--mono); font-size: 1.35rem; line-height: 1.7; color: var(--fg); }
+@media (pointer: coarse), (max-width: 860px) { .ticks { font-size: 0.8rem; line-height: 1.5; } }
