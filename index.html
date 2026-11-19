@@ -367,23 +367,43 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
 
 <section class="slide">
   <h3>DESIGN FROM THE SCREEN, NOT THE TABLE</h3>
-  <div class="flow">
-    <div class="flow-row flow-hd flow-3">
-      <span>the screen</span>
-      <span>what the user wants</span>
-      <span>the code</span>
+  <div class="s2c">
+    <div class="s2c-col">
+      <span class="s2c-l">1 · the screen</span>
+      <div class="s2c-form">
+        <div class="s2c-title">Add your time</div>
+        <div class="s2c-field"><span>puzzle</span>Ravensburger 1000 ▾</div>
+        <div class="s2c-field"><span>time</span>45:12</div>
+        <div class="s2c-field"><span>☑</span>first try</div>
+        <div class="s2c-btn">Save my time</div>
+      </div>
     </div>
-    <div class="flow-row flow-3">
-      <div class="flow-cell col" data-l="the screen"><span class="bx">puzzle: Ravensburger 1000 ▾</span><span class="bx">time: 45:12</span><span class="bx">☑ first try</span><span class="bx hl">Save my time</span></div>
-      <div class="flow-cell" data-l="what the user wants">"add my solving time"</div>
-      <div class="flow-cell col" data-l="the code"><span class="bx">AddPuzzleSolvingTime</span><span class="ar">↓</span><span class="bx">handler</span></div>
+    <div class="s2c-ar">→</div>
+    <div class="s2c-col">
+      <span class="s2c-l">2 · what the user wants</span>
+      <div class="s2c-intent">"add my<br>solving time"</div>
+    </div>
+    <div class="s2c-ar">→</div>
+    <div class="s2c-col">
+      <span class="s2c-l">3 · the code</span>
+      <div class="s2c-code">
+        <span class="s2c-k">command</span>
+        <span class="s2c-cls"><mark>AddPuzzleSolvingTime</mark></span>
+        <span class="s2c-path">src/Message/</span>
+        <span class="s2c-down">↓ dispatched to</span>
+        <span class="s2c-k">handler</span>
+        <span class="s2c-cls">AddPuzzleSolvingTimeHandler</span>
+        <span class="s2c-path">src/MessageHandler/</span>
+      </div>
     </div>
   </div>
+  <p class="s2c-not">not <s>INSERT INTO puzzle_solving_time</s> · not <s>PATCH /puzzle_solving_times/{id}</s></p>
   <p class="why"><span class="arrow">→</span> name the code after the <mark>click</mark>, not after the table</p>
-  <p class="why step"><span class="arrow">→</span> one command, 4 callers: web form · public API · AI agents · CLI import</p>
+  <p class="why step"><span class="arrow">→</span> one command, 3 callers: web form · public API (apps and AI agents) · CLI seeder</p>
   <div class="act">act 1 · easy part</div>
-  <aside class="notes-src">"Nobody clicks 'INSERT INTO puzzle_solving_time'. They click <b>Save my time</b>. So the command is called AddPuzzleSolvingTime, and it does everything that click means."
-  Click: four callers, <b>one</b> command. That's why the API was cheap: the commands already existed for the web form. Next: why that matters more than it sounds (CRUD).
+  <aside class="notes-src">Left to right: "This is the screen. The user wants one thing: <b>add my solving time</b>. So the code is called exactly that: the command AddPuzzleSolvingTime, handled by AddPuzzleSolvingTimeHandler. It does everything that one click means."
+  Point at the struck-through line: "Nobody clicks INSERT INTO puzzle_solving_time. Nobody wants to PATCH a row."
+  Click: one command, three callers (PuzzleAddController, CreateSolvingTimeProcessor, SandboxSeedConsoleCommand; AI agents come in through the public API). That's why the API was cheap: the commands already existed for the web form. Next: why that matters more than it sounds (CRUD).
   Optional aside: "Puzzlers look at the picture on the box before touching a piece. I look at the screen before touching the database."</aside>
 </section>
 
