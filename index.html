@@ -242,11 +242,15 @@ class Book
 {
     <span class="k">#[Groups(['read', 'write'])]</span>
     public $name;
+
+    <span class="k">#[Groups(['write'])]</span>
+    public $author;
 }</pre>
   <p class="why"><span class="arrow">→</span> one class, many shapes, chosen by strings spread across many files</p>
   <p class="source">api-platform.com/docs/core/serialization · "As soon as any of the author's attributes is in the book group, the author will be embedded."</p>
   <div class="act">act 1 · school</div>
-  <aside class="notes-src">Read the embedding quote out loud, slowly. "So whether the author ends up in the JSON depends on a string, <b>in another class</b>."</aside>
+  <aside class="notes-src">Point at $author: "you can send it, but you never get it back. Write-only, because of one missing string." This is the docs' own Book example.
+  Read the embedding quote out loud, slowly. "So whether the author ends up in the JSON depends on a string, <b>in another class</b>."</aside>
 </section>
 
 <section class="slide">
