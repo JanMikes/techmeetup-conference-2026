@@ -89,6 +89,13 @@
     timers.forEach(clearTimeout); timers = []; playing = false;
   }
 
+  /* keep the newest line in view, like a real terminal: once the chat is taller than the
+     panel, scroll the panel to the bottom after every change */
+  function follow(s) {
+    var box = s.querySelector('.claude');
+    if (box) box.scrollTop = box.scrollHeight;
+  }
+
   function finishPlay(s) {
     stopPlay();
     stepsOf(s).forEach(function (el) {
@@ -96,14 +103,16 @@
       el.classList.add('on');
       if (el.classList.contains('type')) { el.textContent = el.dataset.text; el.classList.remove('caret'); }
     });
+    follow(s);
   }
 
   function typeOut(el, done, k) {
-    var text = el.dataset.text, i = 0;
+    var text = el.dataset.text, i = 0, s = el.closest('.slide');
     el.textContent = ''; el.classList.add('caret');
     (function tick() {
       i++;
       el.textContent = text.slice(0, i);
+      follow(s);
       if (i < text.length) { timers.push(setTimeout(tick, (28 + Math.random() * 45) * k)); }
       else { el.classList.remove('caret'); done(); }
     })();
@@ -120,8 +129,9 @@
       var el = list[n++];
       timers.push(setTimeout(function () {
         el.classList.add('on');
+        follow(s);
         if (el.classList.contains('type')) typeOut(el, nextStep, kt);
-        else if (el.dataset.hold) timers.push(setTimeout(function () { el.classList.remove('on'); nextStep(); }, parseInt(el.dataset.hold, 10)));
+        else if (el.dataset.hold) timers.push(setTimeout(function () { el.classList.remove('on'); follow(s); nextStep(); }, parseInt(el.dataset.hold, 10)));
         else nextStep();
       }, parseInt(el.dataset.delay || '900', 10) * k));
     })();
