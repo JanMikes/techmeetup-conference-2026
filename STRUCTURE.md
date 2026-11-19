@@ -283,3 +283,19 @@ Each chapter only uses what an earlier one explained. The promise (11) maps the 
 
 Removed in tier 1: lessons 3+4, two years later, anemic statement, what could go wrong, PR provider, ID before dispatch, HandledStamp, the A/B table, the 422 slide, client sees, team B one line, contract first, lifecycle diagram, RPS table, silent cron, API usage, gains/losses, migration numbers, what I keep hearing, $0.00. Read ①+② merged.
 Tier 2 (later, if rehearsal is long): K merge Hour 1 slides · L merge security + cut callers · M cut CineStar + one sign-on meme · N cut the midpoint.
+
+
+## Iteration 8 (20 Nov 2026, reduction pass)
+
+The user confirmed that the cold-open flow works: intro → today's endpoint (Claude) → the example (PR) → MSP is real → WJPC → stack → disclaimer.
+- THE PROMISE is cut (no "3 things" map, no recap at the end).
+- The ACT 1 opener and the timeline are now one slide: "ACT 1 · THE API WAS THE EASY PART" with OCT 2023 / FEB 2026 / 2 years 4 months. There is no agenda line.
+- Earlier in this pass:
+  - vocabulary is 3 words
+  - puzzle hell is cut
+  - lessons 3 and 4 are restored
+  - the 0-entities line is static
+  - slide 33 shows counts only
+  - "as promised" and "undo #2" are cut
+  - the callback is merged into "why it took 4 minutes"
+  - "example endpoint" replaces "million-dollar endpoint" outside the cold open
