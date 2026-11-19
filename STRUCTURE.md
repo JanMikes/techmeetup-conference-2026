@@ -299,3 +299,4 @@ The user confirmed that the cold-open flow works: intro → today's endpoint (Cl
   - "as promised" and "undo #2" are cut
   - the callback is merged into "why it took 4 minutes"
   - "example endpoint" replaces "million-dollar endpoint" outside the cold open
+- The two HOUR 1 slides are merged: composer require + route import + the trimmed config on one slide.
