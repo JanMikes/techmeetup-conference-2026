@@ -278,7 +278,7 @@ Each chapter only uses what an earlier one explained. The promise (11) maps the 
 | 57–63 | **Worker mode** | PHP is slow → classic PHP meme → worker mode → predict → 14× → production 23 ms → PHP alive | "BUT." |
 | 64–72 | **War story** | CineStar → 31 Dec deploy → sleep meme → inbox → one sign-on → 3 days 14 h → lesson → open loop | "how do I know before 50 emails?" |
 | 73–80 | **Act 3** | agenda → observability → the one alert → feels slow → the trap → one migration → test didn't move → what to log (agents audit) | |
-| 81–82 | **Callback** | remember the million-dollar endpoint → why 4 minutes | |
+| 81–82 | **Callback** | "remember the example endpoint? · why it took 4 minutes" (merged into one slide; the PR resource slide is also "the example endpoint" now) | |
 | 83–89 | **Close** | the decision I'd undo → Auth0 (closes the loop) → wet ink → spread the word (undo #2 "waiting 2 years" cut) → thank you (the "as promised" recap was cut) | |
 
 Removed in tier 1: lessons 3+4, two years later, anemic statement, what could go wrong, PR provider, ID before dispatch, HandledStamp, the A/B table, the 422 slide, client sees, team B one line, contract first, lifecycle diagram, RPS table, silent cron, API usage, gains/losses, migration numbers, what I keep hearing, $0.00. Read ①+② merged.
