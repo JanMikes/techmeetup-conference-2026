@@ -247,3 +247,7 @@ Each section only uses what an earlier one explained.
 | 105–114 | **Close**: Auth0 answers the open loop → wet ink → migration → undo #2 (waiting 2 years) → as promised (3 things) → what I keep hearing → **spread the word** → $0.00 → thank you | | |
 
 Backup of the pre-reorder deck: scratchpad `index.before-reorder.html` (temporary).
+
+## Iteration 6
+- Slide 4: no price and no revenue; run time shown as **4 min 5 s** (staged: the real session took 5 min 18 s, $2.77). All callbacks follow: "four minutes", "WHY IT TOOK 4 MINUTES", world-record math 16:30 / 4:05 = 4 endpoints.
+- Open: the closing "ESTIMATED REVENUE: $0.00" slide no longer has a setup in the intro.
