@@ -671,3 +671,8 @@ a.quiet:hover { color: var(--green); }
   .split img { max-height: 42vh; max-width: 100%; margin: 0 auto; }
   .split h1 { font-size: 2rem; }
 }
+
+/* "✻ Thinking…" in the Claude Code chat: pulses in the Claude accent, then hides (data-hold) */
+.claude .thinking { color: var(--clay); font-style: italic; animation: think 1.1s ease-in-out infinite; }
+@keyframes think { 50% { opacity: 0.35; } }
+@media print { .claude .thinking { display: none !important; } }
