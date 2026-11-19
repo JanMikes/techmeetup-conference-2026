@@ -471,14 +471,16 @@ PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time cha
 </section>
 
 <section class="slide">
-  <h3>MEASURED · SAME DB, SAME IMAGE</h3>
+  <h3>MEASURED · SAME DB, SAME DATA</h3>
   <pre class="term"><span class="rd">Doctrine CRUD</span>   ████████████████████████████  <span class="rd">9,210 queries</span>
-                9,559 entities · 1,890 ms · ~40 MB
+                9,559 entities in memory · in ONE request
 <span class="gr">read model</span>      ▏                              <span class="gr">7 queries</span>
-                0 entities · 108 ms (whole request)</pre>
-  <p class="why step"><span class="arrow">→</span> the REST-purist version: the client does the joins. <mark>4,400+ HTTP requests</mark> for one screen.</p>
+                0 entities · 108 ms, whole request</pre>
+  <p class="why"><span class="arrow">→</span> the REST-purist version: relations as links, the client does the joins. <mark>4,400+ HTTP requests</mark> for one screen.</p>
   <div class="act">act 1 · easy part</div>
-  <aside class="notes-src">Then click: "Pick your poison." Method on the companion page; CRUD timing excludes HTTP and serialization, so reality is worse.</aside>
+  <aside class="notes-src">"Pick your poison: nine thousand queries in one request, or four thousand HTTP requests."
+  <b>If asked about time:</b> loading the same data through entities took 1.9 s in a CLI script on a local Postgres (~0.2 ms per query), <i>without</i> HTTP, security or the serializer. With the DB on another host it's 5–9 s from the queries alone. The 4,400+ HTTP requests were counted, not timed (78 pages + 2,159 puzzles + 2,159 statistics).
+  Method: benchmark/crud/crud-results.php, content/crud-vs-read-model.md.</aside>
 </section>
 
 <section class="slide s-image">
