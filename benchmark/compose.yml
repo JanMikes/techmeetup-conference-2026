@@ -1,0 +1,41 @@
+# Both variants run the SAME image, same CPU budget, against the local production-copy DB.
+# Only difference: FRANKENPHP_WORKER. Run them one at a time (see run.sh).
+name: msp-bench
+networks:
+  msp:
+    external: true
+    name: speedpuzzlingcz_default
+x-common: &common
+  image: msp-bench:latest
+  networks: [msp]
+  cpus: 4
+  environment: &env
+    DATABASE_URL: "postgresql://postgres:postgres@bench-db:5432/speedpuzzling?serverVersion=18&charset=utf8"
+volumes:
+  bench-db: {}
+services:
+  # Own copy of the local production-copy DB (restore.sh): prod-like memory settings,
+  # and the dev DB is never touched by load
+  bench-db:
+    image: postgres:18.7
+    networks: [msp]
+    shm_size: 1g
+    cpus: 4
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: speedpuzzling
+    command: ["postgres", "-c", "shared_buffers=1GB", "-c", "effective_cache_size=3GB", "-c", "work_mem=16MB", "-c", "max_connections=200"]
+    volumes: ["bench-db:/var/lib/postgresql"]
+  worker:
+    <<: *common
+    ports: ["18080:8080"]
+    environment:
+      <<: *env
+      FRANKENPHP_WORKER: "1"
+  classic:
+    <<: *common
+    ports: ["18081:8080"]
+    environment:
+      <<: *env
+      FRANKENPHP_WORKER: "0"
