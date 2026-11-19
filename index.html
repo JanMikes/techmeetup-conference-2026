@@ -224,11 +224,9 @@ FrankenPHP         <span class="dim"># worker mode</span></pre>
 </section>
 
 <section class="slide">
-  <h3>VOCABULARY · 5 WORDS FOR THE NEXT 30 MINUTES</h3>
+  <h3>VOCABULARY · 3 WORDS FOR THE NEXT 30 MINUTES</h3>
   <div class="deflist">
     <div><span class="k">RESOURCE</span>a class with <mark>#[ApiResource]</mark>: URL + operations. <i>any</i> class.</div>
-    <div class="step"><span class="k">INPUT</span>the request object: JSON body → DTO, validated</div>
-    <div class="step"><span class="k">OUTPUT</span>the response object: DTO → JSON</div>
     <div class="step"><span class="k">PROVIDER</span>reads. "give me the data for this GET"</div>
     <div class="step"><span class="k">PROCESSOR</span>writes. "do something with this input"</div>
   </div>
@@ -238,7 +236,7 @@ FrankenPHP         <span class="dim"># worker mode</span></pre>
   <aside class="notes-src">Slowly, this is the glossary for the rest of the talk.
   "Provider and processor are <b>the only place your code touches the HTTP request</b>: they read what came in, hand it to your domain, and turn the result into the response. Everything behind them doesn't know HTTP exists."
   "Out of the box the provider loads an entity and the processor persists it: that's CRUD. <b>Swap those two and the entity disappears from your API.</b>"
-  Naming in MSP: *Response classes (GET resources = output), *Input classes (POST/PATCH/DELETE resources = input).</aside>
+  Input/output DTOs are obvious, not on the slide. If needed, say it in passing: in MSP, *Response classes are what goes out (GET), *Input classes are what comes in (POST/PATCH/DELETE).</aside>
 </section>
 
 <section class="slide s-statement">
