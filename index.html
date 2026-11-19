@@ -277,6 +277,29 @@ class Book
 </section>
 
 <section class="slide">
+  <h3>LESSON 3 · LOGIC IN A SAVE() DECORATOR</h3>
+  <pre class="term sm php"><span class="k">#[ORM\Entity]</span>
+<span class="k">#[ApiResource(operations: [</span>
+    new Post(
+        processor: <mark>UserPasswordHasher</mark>::class,
+        validationContext: ['groups' =&gt; ['Default', 'user:create']],
+    ),
+<span class="k">])]</span>
+class User
+{
+    private ?string <mark>$plainPassword</mark> = null;  <span class="c">// not a column. lives here anyway.</span>
+}
+
+<span class="c"># services.yaml — wraps Doctrine's persist processor</span>
+$processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
+  <p class="why"><span class="arrow">→</span> the "register" scenario became a wrapper around <i>save()</i></p>
+  <p class="source">api-platform.com/docs/symfony/user</p>
+  <div class="act">act 1 · school</div>
+  <aside class="notes-src">"A plain-text password field <b>on the entity</b>, a validation group per operation, and business logic hooked into persistence.
+  Now add 'send a welcome email', 'give the referral bonus'… all of it lands in save()."</aside>
+</section>
+
+<section class="slide">
   <h3>WHY IT HURTS IN YEAR 2</h3>
   <div class="deflist">
     <div><span class="k">SCHEMA</span>is the public contract. refactor a table → version the API</div>
