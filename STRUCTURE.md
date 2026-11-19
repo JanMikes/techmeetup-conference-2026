@@ -265,7 +265,7 @@ Each chapter only uses what an earlier one explained. The promise (11) maps the 
 |---|---|---|---|
 | 1–11 | **Cold open** | Claude builds the endpoint → it works (PR, CI green) → "the interesting part isn't the AI" → MySpeedPuzzling is real → WJPC hall → Czech world champions → stack → ⚠ disclaimer (CQS) → **promise: 3 acts** | "design · production · living with it" |
 | 12–16 | **Act 1 · origin** | act opener (agenda line) → timeline (one day) → Hour 1: `composer require api`, the config → **vocabulary**: resource, provider, processor (input/output dropped as obvious; provider & processor = the HTTP touchpoint) | "by default both point at Doctrine. that default is the tutorial" |
-| 17–21 | **The default** | lesson 1 entity = resource → lesson 2 groups → puzzle hell → why it hurts in year 2 | "one model: reads and writes fight" |
+| 17–21 | **The default** | lesson 1 entity = resource → lesson 2 groups → why it hurts in year 2 | "one model: reads and writes fight" |
 | 22 | **3 decisions** | the resource · scenarios · the read model (answers "why one day?") | |
 | 23–24 | **Decision 1** | not your entity, 0 of 32 → the PR resource DTO | |
 | 25–29 | **Decision 2** | publish vs PATCH → design from the screen → CRUD way (7 calls, crash, race) → scenario way (1 call) | "writes are scenarios, reads are screens" |
