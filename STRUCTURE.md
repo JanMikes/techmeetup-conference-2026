@@ -267,7 +267,7 @@ Each chapter only uses what an earlier one explained. The promise (11) maps the 
 | 12–16 | **Act 1 · origin** | act opener (agenda line) → timeline (one day) → Hour 1: `composer require api`, the config → **vocabulary**: resource, provider, processor (input/output dropped as obvious; provider & processor = the HTTP touchpoint) | "by default both point at Doctrine. that default is the tutorial" |
 | 17–21 | **The default** | lesson 1 entity = resource → lesson 2 groups → lesson 3 logic in a save() decorator (UserPasswordHasher, restored) → lesson 4 the docs un-teach themselves (#[ApiFilter] "not recommended", restored) → why it hurts in year 2 | "one model: reads and writes fight" |
 | 22 | **3 decisions** | the resource · scenarios · the read model (answers "why one day?") | |
-| 23–24 | **Decision 1** | not your entity, 0 of 32 → the PR resource DTO | |
+| 23–24 | **Decision 1** | not your entity, "0 API resources are entities" (shown at once, no total) → the PR resource DTO | |
 | 25–29 | **Decision 2** | publish vs PATCH → design from the screen → CRUD way (7 calls, crash, race) → scenario way (1 call) | "writes are scenarios, reads are screens" |
 | 30–33 | **Decision 3** | predict → 9,210 vs 7 queries → N+1 | "three decisions, one picture" |
 | 34–38 | **Putting it together** | layers diagram → end to end read (one slide) → write: input, processor, handler → "that was team A" | "five classes. is that a lot?" |
