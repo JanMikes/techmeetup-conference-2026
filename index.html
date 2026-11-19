@@ -481,34 +481,33 @@ PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time cha
 
 <section class="slide">
   <h3>PUTTING IT TOGETHER · THE LAYERS</h3>
-  <div class="flow">
-    <div class="flow-row flow-hd">
-      <span></span>
-      <span>HTTP · API Platform</span>
-      <span>application</span>
-      <span>domain · storage</span>
-    </div>
-    <div class="flow-row">
-      <span class="flow-tag gr">READ</span>
-      <div class="flow-cell" data-l="HTTP · API Platform"><span class="bx">GET</span><span class="ar">→</span><span class="bx hl">Provider</span></div>
-      <div class="flow-cell" data-l="application"><span class="bx">Query</span><span class="ar">→</span><span class="bx">Result DTO</span></div>
-      <div class="flow-cell" data-l="domain · storage"><span class="bx">hand-written SQL</span></div>
-    </div>
-    <div class="flow-back"><span class="ar">←</span> Response DTO · no entity touched</div>
-    <div class="flow-row step">
-      <span class="flow-tag am">WRITE</span>
-      <div class="flow-cell" data-l="HTTP · API Platform"><span class="bx">POST</span><span class="ar">→</span><span class="bx">Input ✓</span><span class="ar">→</span><span class="bx hl">Processor</span></div>
-      <div class="flow-cell" data-l="application"><span class="bx">Command</span><span class="ar">→</span><span class="bx">bus</span><span class="ar">→</span><span class="bx">Handler</span></div>
-      <div class="flow-cell" data-l="domain · storage"><span class="bx">Entity</span><span class="ar">→</span><span class="bx">Repository</span></div>
-    </div>
-    <div class="flow-back step"><span class="ar">←</span> handler returns <b>void</b> · the response comes from the <mark>read side</mark></div>
+  <div class="lyr">
+    <div class="lyr-hd"></div>
+    <div class="lyr-hd l1">HTTP<small>knows the request</small></div>
+    <div class="lyr-hd l2">application<small>no HTTP</small></div>
+    <div class="lyr-hd l3">domain · storage<small>no HTTP</small></div>
+
+    <div class="lyr-tag gr">READ</div>
+    <div class="lyr-cell l1"><div class="lyr-in"><span class="bx">GET</span><span class="ar">→</span><span class="bx hl">Provider</span></div><div class="lyr-out"><span class="ar">←</span><span class="bx out">Response DTO</span></div></div>
+    <div class="lyr-cell l2"><div class="lyr-in"><span class="bx">Query</span></div><div class="lyr-out"><span class="ar">←</span><span class="bx out">Result DTO</span></div></div>
+    <div class="lyr-cell l3"><div class="lyr-in"><span class="bx">hand-written SQL</span></div><div class="lyr-out"><span class="ar">←</span><span class="bx out">rows</span><span class="lyr-note">no entity</span></div></div>
+
+    <div class="lyr-tag am step">WRITE</div>
+    <div class="lyr-cell l1 step"><div class="lyr-in"><span class="bx">POST</span><span class="ar">→</span><span class="bx hl">Processor</span></div><div class="lyr-out"><span class="ar">←</span><span class="bx out">Response DTO</span><span class="lyr-note">from the <mark>read side</mark></span></div></div>
+    <div class="lyr-cell l2 step"><div class="lyr-in"><span class="bx">Command</span><span class="ar">→</span><span class="bx">Handler</span></div><div class="lyr-out"><span class="ar">←</span><span class="bx out">void</span></div></div>
+    <div class="lyr-cell l3 step"><div class="lyr-in"><span class="bx">Entity</span><span class="ar">→</span><span class="bx">Repository</span></div></div>
+
+    <div class="lyr-tag bl step">WEB</div>
+    <div class="lyr-cell l1 step"><div class="lyr-in"><span class="bx">form</span><span class="ar">→</span><span class="bx hl">Controller</span></div><div class="lyr-out"><span class="ar">←</span><span class="bx out">HTML</span></div></div>
+    <div class="lyr-cell l2 lyr-same step"><span>the <b>same</b> Query &amp; Command</span></div>
+    <div class="lyr-cell l3 lyr-same step"><span>the <b>same</b></span></div>
   </div>
-  <p class="why step"><span class="arrow">→</span> HTTP lives in the first column only. the rest doesn't know it exists.</p>
   <div class="act">act 1 · together</div>
-  <aside class="notes-src">"Three decisions, one picture." The CQS slide. <b>Reads:</b> provider → query object → SQL straight into a DTO. No entity, no Doctrine hydration.
-  <b>Writes</b> (click): input DTO with validation → processor (the adapter: user, id, dispatch) → command → handler → entity → repository.
-  The handler returns nothing, so the processor asks the read side for the response.
-  "Provider = the read door. Processor = the write door. Everything behind the doors is shared with the website, the CLI and the agents."</aside>
+  <aside class="notes-src">"Three decisions, one picture." Three bands: only the green HTTP band knows there is a request. Read each row left to right (the request), then the dim line right to left (what comes back).
+  <b>Read:</b> GET → provider → query object → SQL. Rows come back as a Result DTO, the provider turns it into the Response DTO. No entity, no Doctrine hydration.
+  <b>Write</b> (click): POST → processor (the adapter: validated input, user, id, dispatch) → command → handler → entity → repository. The handler returns <b>void</b>, so the processor asks the <b>read side</b> for the response.
+  <b>Web</b> (click): the website's controller is just another door. Same queries, same commands.
+  "Provider = the read door. Processor = the write door. Controller = the website's door. Everything behind the doors is shared."</aside>
 </section>
 
 <section class="slide">

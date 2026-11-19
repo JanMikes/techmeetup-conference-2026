@@ -745,3 +745,39 @@ a.quiet:hover { color: var(--green); }
   .s2c-intent { font-size: 1rem; padding: 0.5rem; }
   .s2c-not { font-size: 0.65rem; }
 }
+
+/* ---------- the layers diagram (request →, response ←) ---------- */
+.lyr { display: grid; grid-template-columns: 6.5rem 1.25fr 1fr 1fr; gap: 0.8rem 1rem; width: 100%; margin-top: 0.6rem; align-items: stretch; }
+.lyr-hd { font-size: 1.05rem; letter-spacing: 0.14em; text-transform: uppercase; color: var(--dim);
+  border-bottom: 1px solid var(--line); padding-bottom: 0.4rem; }
+.lyr-hd:first-child { border-bottom: 0; }
+.lyr-hd small { display: block; margin-top: 0.2rem; font-size: 0.95rem; letter-spacing: 0.08em; text-transform: none; }
+.lyr-hd.l1 { color: var(--green); border-bottom: 3px solid var(--green); }
+.lyr-hd.l2 { color: var(--amber); border-bottom: 3px solid var(--amber); }
+.lyr-hd.l3 { color: var(--fg); border-bottom: 3px solid var(--dim); }
+.lyr-cell.l1 { background: color-mix(in srgb, var(--green) 9%, var(--panel)); border-color: color-mix(in srgb, var(--green) 35%, var(--line)); }
+.lyr-cell.l2 { background: color-mix(in srgb, var(--amber) 6%, var(--panel)); border-color: color-mix(in srgb, var(--amber) 25%, var(--line)); }
+.lyr-tag { font-family: var(--mono); font-size: 1.5rem; font-weight: 700; align-self: center; }
+.lyr-tag.gr { color: var(--green); }
+.lyr-tag.am { color: var(--amber); }
+.lyr-tag.bl { color: var(--dim); }
+.lyr-cell { display: flex; flex-direction: column; justify-content: center; gap: 0.45rem; padding: 0.75rem 0.9rem;
+  border: 1px solid var(--line); border-radius: 6px; background: var(--panel); font-family: var(--mono); font-size: 1.3rem; }
+.lyr-in, .lyr-out { display: flex; align-items: center; flex-wrap: wrap; gap: 0.45rem; }
+.lyr-out { font-size: 1.05rem; color: var(--dim); }
+.lyr .bx { padding: 0.2rem 0.55rem; border: 1px solid var(--line); border-radius: 4px; background: var(--bg); white-space: nowrap; }
+.lyr .bx.hl { border-color: var(--green); color: var(--green); }
+.lyr .bx.out { border-style: dashed; color: var(--dim); }
+.lyr .ar { color: var(--dim); }
+.lyr-note { font-size: 0.95rem; color: var(--dim); }
+.lyr-same { border-style: dashed; background: transparent; color: var(--dim); font-size: 1.1rem; }
+.lyr-same b { color: var(--fg); }
+@media (pointer: coarse), (max-width: 860px) {
+  .lyr { grid-template-columns: 3.2rem 1fr 1fr 1fr; gap: 0.35rem; }
+  .lyr-hd { font-size: 0.55rem; letter-spacing: 0.06em; }
+  .lyr-tag { font-size: 0.65rem; }
+  .lyr-cell { font-size: 0.6rem; padding: 0.35rem; gap: 0.25rem; }
+  .lyr-out, .lyr-note, .lyr-same { font-size: 0.5rem; }
+  .lyr .bx { padding: 0.1rem 0.25rem; white-space: normal; }
+}
+@media print { .lyr .step { display: flex; } .lyr .lyr-tag.step { display: block; } }
