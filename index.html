@@ -511,24 +511,55 @@ PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time cha
 </section>
 
 <section class="slide">
-  <h3>END TO END · READ: RESOURCE → PROVIDER → SQL</h3>
-  <p class="file">src/Api/V1/MyCollectionsResponse.php · MyCollectionsResponseProvider.php · src/Query/GetPlayerCollections.php</p>
-  <pre class="term sm php"><span class="k">#[ApiResource(operations: [</span>new <mark>Get</mark>(
-    uriTemplate: '/v1/me/collections',
-    security: "is_granted('ROLE_PAT') or is_granted('ROLE_OAUTH2_COLLECTIONS:READ')",
-    provider: MyCollectionsResponseProvider::class,
-)<span class="k">])]</span>
-final class MyCollectionsResponse { public string $playerId; public int $count; public array $collections; }
-
-<span class="c">// the provider: ask the read side, return the DTO</span>
-$collections = $this-&gt;<mark>getPlayerCollections</mark>-&gt;byPlayerId($playerId);
-return new MyCollectionsResponse($playerId, count(…), array_map(…));
-
-<span class="c">-- the query object: SQL straight into a DTO</span>
-SELECT id, name, description, visibility, … FROM collection WHERE player_id = :playerId</pre>
-  <p class="why"><span class="arrow">→</span> no entity. no hydration. the website uses the <mark>same query</mark>.</p>
+  <h3>END TO END · READ ① THE RESOURCE</h3>
+  <p class="file">src/Api/V1/MyCollectionsResponse.php</p>
+  <pre class="term sm php"><span class="k">#[ApiResource(</span>
+    shortName: 'MyCollections',
+    operations: [
+        new <mark>Get</mark>(
+            uriTemplate: '/v1/me/collections',
+            security: "is_granted('ROLE_PAT') or is_granted('ROLE_OAUTH2_COLLECTIONS:READ')",
+            provider: <mark>MyCollectionsResponseProvider</mark>::class,
+        ),
+    ],
+<span class="k">)]</span>
+final class MyCollectionsResponse
+{
+    public function __construct(
+        public string $playerId,
+        public int $count,
+        public array $collections, <span class="c">// CollectionResponse[]</span>
+    ) {}
+}</pre>
+  <p class="why"><span class="arrow">→</span> URL, who may call it, the JSON shape. <mark>no entity</mark>, no groups.</p>
   <div class="act">act 1 · end to end</div>
-  <aside class="notes-src">"Let's walk one read and one write all the way through: <b>my collections</b>. The resource says the URL, who may call it and the JSON shape. The provider is glue. The query already existed for the collections page." Trimmed for the slide.</aside>
+  <aside class="notes-src">"Let's walk one read and one write all the way through: <b>my collections</b>. The resource says three things: the URL, who may call it, and the JSON shape. That's all it does."
+  Trimmed: the openapi tag and the docblock types; $collections is assigned in the constructor body in the real file.</aside>
+</section>
+
+<section class="slide">
+  <h3>END TO END · READ ② THE PROVIDER</h3>
+  <p class="file">src/Api/V1/MyCollectionsResponseProvider.php · src/Query/GetPlayerCollections.php</p>
+  <pre class="term sm php">public function provide(Operation $operation, …): MyCollectionsResponse
+{
+    $playerId = $this-&gt;security-&gt;getUser()-&gt;getPlayer()-&gt;id-&gt;toString();
+
+    $collections = $this-&gt;<mark>getPlayerCollections</mark>-&gt;byPlayerId($playerId, includePrivate: true);
+
+    $responses = array_map(fn ($c) =&gt; new CollectionResponse(
+        collectionId: $c-&gt;collectionId, name: $c-&gt;name,
+        description: $c-&gt;description, visibility: $c-&gt;visibility-&gt;value,
+    ), $collections);
+
+    return new MyCollectionsResponse($playerId, count($responses), $responses);
+}</pre>
+  <pre class="term sm sql"><span class="c">-- GetPlayerCollections: SQL straight into a read DTO</span>
+SELECT id, name, description, visibility, created_at, player_id
+FROM collection WHERE player_id = :playerId ORDER BY created_at DESC</pre>
+  <p class="why"><span class="arrow">→</span> the provider is glue. the website uses the <mark>same query</mark>.</p>
+  <div class="act">act 1 · end to end</div>
+  <aside class="notes-src">"The provider is glue: who's asking, ask the read side, map to the response. <b>The query already existed for the collections page</b>." (GetPlayerCollections is also used by PuzzleLibraryController, PuzzleAddController and others.)
+  Trimmed: the unused $uriVariables/$context parameters, the ApiUser assert, and the virtual "Default Collection" that is prepended when the player has items outside any collection.</aside>
 </section>
 
 <section class="slide">
