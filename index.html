@@ -300,6 +300,16 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
 </section>
 
 <section class="slide">
+  <h3>LESSON 4 · …THE DOCS UN-TEACH THEMSELVES</h3>
+  <pre class="term xl bad php"><span class="k">#[ApiFilter(SearchFilter::class, …)]</span></pre>
+  <p class="why"><span class="arrow">→</span> "The legacy method using the ApiFilter attribute is <mark>not recommended</mark>."</p>
+  <p class="source">api-platform.com/docs/core/filters</p>
+  <div class="act">act 1 · school</div>
+  <aside class="notes-src">Laugh beat. "Even the docs moved on. Half the blog posts out there didn't." The replacement, QueryParameter, is in act 2.</aside>
+</section>
+
+
+<section class="slide">
   <h3>WHY IT HURTS IN YEAR 2</h3>
   <div class="deflist">
     <div><span class="k">SCHEMA</span>is the public contract. refactor a table → version the API</div>
