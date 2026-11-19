@@ -191,7 +191,6 @@ FrankenPHP         <span class="dim"># worker mode</span></pre>
 'name_converter' =&gt; 'serializer.name_converter.camel_case_to_snake_case',
 'defaults'       =&gt; ['stateless' =&gt; true],
 'oauth'          =&gt; ['enabled' =&gt; true, 'flow' =&gt; 'authorizationCode', …],</pre>
-  <p class="why"><span class="arrow">→</span> from here on, an endpoint is <mark>just a PHP class</mark> in src/Api.</p>
   <div class="act">act 1 · easy part</div>
   <aside class="notes-src">Fly through it. "The Flex recipe does the rest. One command, one route import, one config file. No controllers. No routes. No serializer config per endpoint. <b>Everything after this hour is plain PHP classes.</b>"
   camelCase in PHP, snake_case on the wire, the name converter maps both ways, including validation paths.</aside>
