@@ -252,3 +252,4 @@ Backup of the pre-reorder deck: scratchpad `index.before-reorder.html` (temporar
 - Slide 4: no price and no revenue; run time shown as **4 min 5 s** (staged: the real session took 5 min 18 s, $2.77). All callbacks follow: "four minutes", "WHY IT TOOK 4 MINUTES", world-record math 16:30 / 4:05 = 4 endpoints.
 - Open: the closing "ESTIMATED REVENUE: $0.00" slide no longer has a setup in the intro.
 - Slide 5 (new): screenshot of PR #477 (CI green after the secret-puzzle canary fix, commit 69628e791); slide 4 now says 830 lines to match the PR. Deck is 115 slides, every later number shifts by one.
+- Slide 9 (new): Jan's own WJPC 2026 photo of the Czech team (cropped, EXIF/GPS stripped): "CZECHIA: WORLD CHAMPIONS IN TEAMS." Deck is 116 slides.
