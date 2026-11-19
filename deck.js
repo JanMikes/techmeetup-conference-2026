@@ -77,7 +77,8 @@
 
   /* ---------- autoplay (the Claude Code chat): steps reveal themselves on a timer ----------
      data-delay on a step = ms to wait before it appears (default 900).
-     .type steps type their data-text out. "next" during playback finishes it at once. */
+     .type steps type their data-text out. "next" during playback finishes it at once.
+     data-speed on the slide scales every delay and the typing (0.5 = twice as fast). */
 
   var timers = [];
   var playing = false;
@@ -94,20 +95,20 @@
     });
   }
 
-  function typeOut(el, done) {
+  function typeOut(el, done, k) {
     var text = el.dataset.text, i = 0;
     el.textContent = ''; el.classList.add('caret');
     (function tick() {
       i++;
       el.textContent = text.slice(0, i);
-      if (i < text.length) { timers.push(setTimeout(tick, 28 + Math.random() * 45)); }
+      if (i < text.length) { timers.push(setTimeout(tick, (28 + Math.random() * 45) * k)); }
       else { el.classList.remove('caret'); done(); }
     })();
   }
 
   function autoplay(s) {
     stopPlay();
-    var list = stepsOf(s), n = 0;
+    var list = stepsOf(s), n = 0, k = parseFloat(s.dataset.speed || '1');
     list.forEach(function (el) { el.classList.remove('on'); if (el.classList.contains('type')) el.textContent = ''; });
     playing = true;
     (function nextStep() {
@@ -115,8 +116,8 @@
       var el = list[n++];
       timers.push(setTimeout(function () {
         el.classList.add('on');
-        if (el.classList.contains('type')) typeOut(el, nextStep); else nextStep();
-      }, parseInt(el.dataset.delay || '900', 10)));
+        if (el.classList.contains('type')) typeOut(el, nextStep, k); else nextStep();
+      }, parseInt(el.dataset.delay || '900', 10) * k));
     })();
   }
 
