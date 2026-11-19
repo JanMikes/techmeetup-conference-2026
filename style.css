@@ -698,3 +698,12 @@ a.quiet:hover { color: var(--green); }
 .term .syn.num  { color: var(--syn-num); }
 .term .syn.com  { color: var(--dim); }
 .term .syn.attr { color: var(--amber); }
+/* three-column variant of the flow diagram (no lane tag) */
+.flow-row.flow-3 { grid-template-columns: 1.4fr 1fr 1.2fr; }
+.flow-3 .flow-cell { font-size: 1.5rem; }
+.flow-cell.col { flex-direction: column; align-items: flex-start; justify-content: center; }
+.flow-3 .flow-cell:not(.col) { justify-content: center; }
+@media (pointer: coarse), (max-width: 860px) {
+  .flow-row.flow-3 { grid-template-columns: 1fr; }
+  .flow-3 .flow-cell { font-size: 0.8rem; }
+}

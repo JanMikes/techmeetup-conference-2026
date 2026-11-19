@@ -422,15 +422,25 @@ class PuzzleSolvingTime
 </section>
 
 <section class="slide">
-  <h3>LOOK AT THE BOX FIRST</h3>
-  <pre class="diagram">   SCREEN             SCENARIO                COMMAND
- ┌────────┐    "add my solving time"     AddPuzzleSolvingTime
- │ ▦▦▦▦▦▦ │  ──────────────────────▶   ──────────────▶ handler
- └────────┘
-                   called by:  <mark>web UI</mark> · public API · internal API · CLI</pre>
-  <p class="why"><span class="arrow">→</span> puzzlers look at the picture on the box first. design from the screens.</p>
+  <h3>DESIGN FROM THE SCREEN, NOT THE TABLE</h3>
+  <div class="flow">
+    <div class="flow-row flow-hd flow-3">
+      <span>the screen</span>
+      <span>what the user wants</span>
+      <span>the code</span>
+    </div>
+    <div class="flow-row flow-3">
+      <div class="flow-cell col" data-l="the screen"><span class="bx">puzzle: Ravensburger 1000 ▾</span><span class="bx">time: 45:12</span><span class="bx">☑ first try</span><span class="bx hl">Save my time</span></div>
+      <div class="flow-cell" data-l="what the user wants">"add my solving time"</div>
+      <div class="flow-cell col" data-l="the code"><span class="bx">AddPuzzleSolvingTime</span><span class="ar">↓</span><span class="bx">handler</span></div>
+    </div>
+  </div>
+  <p class="why"><span class="arrow">→</span> name the code after the <mark>click</mark>, not after the table</p>
+  <p class="why step"><span class="arrow">→</span> one command, 4 callers: web form · public API · AI agents · CLI import</p>
   <div class="act">act 1 · easy part</div>
-  <aside class="notes-src">Four callers, <b>one</b> command. That's why the API was cheap: the commands already existed for the web UI. Next: why that matters more than it sounds (CRUD).</aside>
+  <aside class="notes-src">"Nobody clicks 'INSERT INTO puzzle_solving_time'. They click <b>Save my time</b>. So the command is called AddPuzzleSolvingTime, and it does everything that click means."
+  Click: four callers, <b>one</b> command. That's why the API was cheap: the commands already existed for the web form. Next: why that matters more than it sounds (CRUD).
+  Optional aside: "Puzzlers look at the picture on the box before touching a piece. I look at the screen before touching the database."</aside>
 </section>
 
 <section class="slide s-statement">
