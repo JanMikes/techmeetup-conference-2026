@@ -279,7 +279,7 @@ Each chapter only uses what an earlier one explained. The promise (11) maps the 
 | 64–72 | **War story** | CineStar → 31 Dec deploy → sleep meme → inbox → one sign-on → 3 days 14 h → lesson → open loop | "how do I know before 50 emails?" |
 | 73–80 | **Act 3** | agenda → observability → the one alert → feels slow → the trap → one migration → test didn't move → what to log (agents audit) | |
 | 81–82 | **Callback** | remember the million-dollar endpoint → why 4 minutes | |
-| 83–89 | **Close** | decisions I'd undo → Auth0 (closes the loop) → wet ink → undo #2 (waiting 2 years) → spread the word → thank you (the "as promised" recap was cut) | |
+| 83–89 | **Close** | the decision I'd undo → Auth0 (closes the loop) → wet ink → spread the word (undo #2 "waiting 2 years" cut) → thank you (the "as promised" recap was cut) | |
 
 Removed in tier 1: lessons 3+4, two years later, anemic statement, what could go wrong, PR provider, ID before dispatch, HandledStamp, the A/B table, the 422 slide, client sees, team B one line, contract first, lifecycle diagram, RPS table, silent cron, API usage, gains/losses, migration numbers, what I keep hearing, $0.00. Read ①+② merged.
 Tier 2 (later, if rehearsal is long): K merge Hour 1 slides · L merge security + cut callers · M cut CineStar + one sign-on meme · N cut the midpoint.
