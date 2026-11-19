@@ -255,3 +255,4 @@ Backup of the pre-reorder deck: scratchpad `index.before-reorder.html` (temporar
 - Slide 9 (new): Jan's own WJPC 2026 photo of the Czech team (cropped, EXIF/GPS stripped): "CZECHIA: WORLD CHAMPIONS IN TEAMS." Deck is 116 slides.
 - Slides 4+5 merged: the PR #477 screenshot with "IT WORKS. 4 min 5 s · CI green ✓" (PR, tests and lines in the small line). Deck is 115 slides.
 - Removed: AUGUST 2024 (Dummy endpoint), AUTHENTICATION V0 (?token=), FEB 2026 one-day slide. Timeline drops AUG 2024; FEB 2026 reads "API Platform. in one day, with Claude." Deck is 112 slides.
+- Decision 1 + "0 entities" merged into one slide (the zero is a click). Deck is 111 slides.
