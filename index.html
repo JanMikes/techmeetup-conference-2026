@@ -231,9 +231,11 @@ FrankenPHP         <span class="dim"># worker mode</span></pre>
     <div class="step"><span class="k">PROVIDER</span>reads. "give me the data for this GET"</div>
     <div class="step"><span class="k">PROCESSOR</span>writes. "do something with this input"</div>
   </div>
+  <p class="why step"><span class="arrow">→</span> provider &amp; processor are the <mark>touchpoint</mark>: request data in → your domain → response out</p>
   <p class="why step"><span class="arrow">→</span> by default both point at Doctrine. that default is <mark>the tutorial</mark>.</p>
   <div class="act">act 1 · easy part</div>
   <aside class="notes-src">Slowly, this is the glossary for the rest of the talk.
+  "Provider and processor are <b>the only place your code touches the HTTP request</b>: they read what came in, hand it to your domain, and turn the result into the response. Everything behind them doesn't know HTTP exists."
   "Out of the box the provider loads an entity and the processor persists it: that's CRUD. <b>Swap those two and the entity disappears from your API.</b>"
   Naming in MSP: *Response classes (GET resources = output), *Input classes (POST/PATCH/DELETE resources = input).</aside>
 </section>
