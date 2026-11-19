@@ -201,7 +201,7 @@ FrankenPHP         <span class="dim"># worker mode</span></pre>
   <h3>HOUR 1 · PLAIN SYMFONY APP → API</h3>
   <pre class="term xl"><span class="gr">$</span> composer require <mark>api</mark></pre>
   <p class="file">config/routes/api_platform.php</p>
-  <pre class="term">$routes-&gt;import('.', 'api_platform')-&gt;prefix('/api');</pre>
+  <pre class="term php">$routes-&gt;import('.', 'api_platform')-&gt;prefix('/api');</pre>
   <p class="why"><span class="arrow">→</span> one command. one route import.</p>
   <div class="act">act 1 · easy part</div>
   <aside class="notes-src">Fly through it. "The Flex recipe does the rest. That's the whole installation."</aside>
@@ -210,7 +210,7 @@ FrankenPHP         <span class="dim"># worker mode</span></pre>
 <section class="slide">
   <h3>HOUR 1 · THE WHOLE CONFIG</h3>
   <p class="file">config/packages/api_platform.php · trimmed</p>
-  <pre class="term sm">'mapping'        =&gt; ['paths' =&gt; ['%kernel.project_dir%/<mark>src/Api</mark>']],
+  <pre class="term sm php">'mapping'        =&gt; ['paths' =&gt; ['%kernel.project_dir%/<mark>src/Api</mark>']],
 'formats'        =&gt; ['json' =&gt; ['application/json']],
 'error_formats'  =&gt; ['problem' =&gt; ['application/problem+json']],
 'name_converter' =&gt; 'serializer.name_converter.camel_case_to_snake_case',
@@ -251,7 +251,7 @@ FrankenPHP         <span class="dim"># worker mode</span></pre>
 
 <section class="slide">
   <h3>LESSON 1 · THE ENTITY IS THE RESOURCE</h3>
-  <pre class="term xl"><span class="k">#[ORM\Entity]</span>
+  <pre class="term xl php"><span class="k">#[ORM\Entity]</span>
 <span class="k">#[<mark>ApiResource</mark>]</span>
 class Review
 { … }</pre>
@@ -263,7 +263,7 @@ class Review
 
 <section class="slide">
   <h3>LESSON 2 · SERIALIZATION GROUPS</h3>
-  <pre class="term"><span class="k">#[ApiResource(</span>
+  <pre class="term php"><span class="k">#[ApiResource(</span>
     normalizationContext: ['groups' =&gt; [<mark>'read'</mark>]],
     denormalizationContext: ['groups' =&gt; [<mark>'write'</mark>]],
 <span class="k">)]</span>
@@ -280,7 +280,7 @@ class Book
 
 <section class="slide">
   <h3>LESSON 3 · LOGIC IN A SAVE() DECORATOR</h3>
-  <pre class="term sm"><span class="k">#[ORM\Entity]</span>
+  <pre class="term sm php"><span class="k">#[ORM\Entity]</span>
 <span class="k">#[ApiResource(operations: [</span>
     new Post(
         processor: <mark>UserPasswordHasher</mark>::class,
@@ -303,7 +303,7 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
 
 <section class="slide">
   <h3>LESSON 4 · …THE DOCS UN-TEACH THEMSELVES</h3>
-  <pre class="term xl bad"><span class="k">#[ApiFilter(SearchFilter::class, …)]</span></pre>
+  <pre class="term xl bad php"><span class="k">#[ApiFilter(SearchFilter::class, …)]</span></pre>
   <p class="why"><span class="arrow">→</span> "The legacy method using the ApiFilter attribute is <mark>not recommended</mark>."</p>
   <p class="source">api-platform.com/docs/core/filters</p>
   <div class="act">act 1 · school</div>
@@ -312,7 +312,7 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
 
 <section class="slide">
   <h3>TWO YEARS LATER</h3>
-  <pre class="term bad sm"><span class="k">#[ORM\Entity]</span>
+  <pre class="term bad sm php"><span class="k">#[ORM\Entity]</span>
 <span class="k">#[ApiResource]</span>
 <span class="k">#[ApiFilter(SearchFilter::class, properties: ['player' =&gt; 'exact'])]</span>
 class PuzzleSolvingTime
@@ -381,7 +381,7 @@ class PuzzleSolvingTime
 <section class="slide">
   <h3>THE MILLION-DOLLAR ENDPOINT · THE RESOURCE</h3>
   <p class="file">src/Api/V1/PuzzleLeaderboardResponse.php · PR #477</p>
-  <pre class="term sm"><span class="k">#[ApiResource(operations: [</span>
+  <pre class="term sm php"><span class="k">#[ApiResource(operations: [</span>
     new Get(
         uriTemplate: '/v1/puzzles/{puzzleId}/leaderboard',
         <mark>provider</mark>: PuzzleLeaderboardResponseProvider::class,
@@ -510,7 +510,7 @@ PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time cha
 <section class="slide">
   <h3>THE MILLION-DOLLAR ENDPOINT · THE PROVIDER</h3>
   <p class="file">src/Api/V1/PuzzleLeaderboardResponseProvider.php · PR #477</p>
-  <pre class="term">$attempts = match ($type) {
+  <pre class="term php">$attempts = match ($type) {
     'duo'   =&gt; $this-&gt;<mark>getPuzzleSolvers</mark>-&gt;duoByPuzzleId($puzzleId),
     'team'  =&gt; $this-&gt;getPuzzleSolvers-&gt;teamByPuzzleId($puzzleId),
     default =&gt; $this-&gt;getPuzzleSolvers-&gt;soloByPuzzleId($puzzleId),
@@ -590,7 +590,7 @@ $rows = $this-&gt;puzzlesSorter-&gt;groupPlayers(
 <section class="slide">
   <h3>END TO END · READ ① THE RESOURCE</h3>
   <p class="file">src/Api/V1/MyCollectionsResponse.php</p>
-  <pre class="term sm"><span class="k">#[ApiResource(operations: [</span>
+  <pre class="term sm php"><span class="k">#[ApiResource(operations: [</span>
     new <mark>Get</mark>(
         uriTemplate: '/v1/me/collections',
         security: "is_granted('ROLE_PAT') or is_granted('ROLE_OAUTH2_COLLECTIONS:READ')",
@@ -613,7 +613,7 @@ final class MyCollectionsResponse
 <section class="slide">
   <h3>END TO END · READ ② PROVIDER → QUERY</h3>
   <p class="file">src/Api/V1/MyCollectionsResponseProvider.php · src/Query/GetPlayerCollections.php</p>
-  <pre class="term sm">public function provide(…): MyCollectionsResponse
+  <pre class="term sm php">public function provide(…): MyCollectionsResponse
 {
     $playerId = <span class="c">/* the logged-in player */</span>;
     $collections = $this-&gt;<mark>getPlayerCollections</mark>-&gt;byPlayerId($playerId);
@@ -634,7 +634,7 @@ ORDER BY created_at DESC</pre>
 <section class="slide">
   <h3>END TO END · WRITE ① THE INPUT</h3>
   <p class="file">src/Api/V1/CreateCollectionInput.php</p>
-  <pre class="term sm"><span class="k">#[ApiResource(operations: [</span>
+  <pre class="term sm php"><span class="k">#[ApiResource(operations: [</span>
     new <mark>Post</mark>(
         uriTemplate: '/v1/me/collections',
         security: "is_granted('ROLE_PAT') or is_granted('ROLE_OAUTH2_COLLECTIONS:WRITE')",
@@ -658,7 +658,7 @@ final class CreateCollectionInput
 <section class="slide">
   <h3>END TO END · WRITE ② THE PROCESSOR</h3>
   <p class="file">src/Api/V1/CreateCollectionProcessor.php</p>
-  <pre class="term sm">$playerId = $user-&gt;getPlayer()-&gt;id-&gt;toString();
+  <pre class="term sm php">$playerId = $user-&gt;getPlayer()-&gt;id-&gt;toString();
 
 if ($profile-&gt;activeMembership === false) {
     throw new AccessDeniedHttpException('Active membership is required…');
@@ -681,7 +681,7 @@ return new CollectionResponse(collectionId: $collectionId, …);</pre>
 
 <section class="slide">
   <h3>ID BEFORE DISPATCH</h3>
-  <pre class="term xl">$id = Uuid::uuid7();                        <span class="dim"># new</span>
+  <pre class="term xl php">$id = Uuid::uuid7();                        <span class="dim"># new</span>
 $id = Uuid::uuid5($ns, $idempotencyKey);    <span class="dim"># retry → same id</span></pre>
   <p class="why"><span class="arrow">→</span> the URL exists before the command runs. a retry returns the same resource.</p>
   <div class="act">act 1 · end to end · CUT IF LONG</div>
@@ -691,7 +691,7 @@ $id = Uuid::uuid5($ns, $idempotencyKey);    <span class="dim"># retry → same i
 <section class="slide">
   <h3>END TO END · WRITE ③ COMMAND → HANDLER</h3>
   <p class="file">src/MessageHandler/CreateCollectionHandler.php</p>
-  <pre class="term sm">public function __invoke(CreateCollection $message): <mark>void</mark>
+  <pre class="term sm php">public function __invoke(CreateCollection $message): <mark>void</mark>
 {
     $player = $this-&gt;playerRepository-&gt;get($message-&gt;playerId);
 
@@ -713,7 +713,7 @@ $id = Uuid::uuid5($ns, $idempotencyKey);    <span class="dim"># retry → same i
 <section class="slide">
   <h3>TEAM B · THE PRAGMATIC WAY</h3>
   <p class="file">Fantasy Academy · api/src/Message/Subscription/CreateCheckoutSession.php</p>
-  <pre class="term sm"><span class="k">#[Post(</span>
+  <pre class="term sm php"><span class="k">#[Post(</span>
     uriTemplate: '/subscription/checkout',
     output: CheckoutSessionResponse::class,
     <mark>messenger: 'input'</mark>,
@@ -736,7 +736,7 @@ readonly final class CreateCheckoutSession implements UserAware
 <section class="slide">
   <h3>HOW DOES IT RETURN A RESPONSE?</h3>
   <p class="file">vendor/api-platform/core/src/Symfony/Messenger/Processor.php</p>
-  <pre class="term">$handledStamp = $envelope-&gt;last(HandledStamp::class);
+  <pre class="term php">$handledStamp = $envelope-&gt;last(HandledStamp::class);
 if (!$handledStamp instanceof HandledStamp) {
     return $data;                   <span class="c">// async: nothing handled yet</span>
 }
@@ -751,7 +751,7 @@ return $handledStamp-&gt;<mark>getResult()</mark>;</pre>
   <div class="cols">
     <div>
       <span class="label">A · EXPLICIT</span>
-      <pre class="term">$user = $this-&gt;security-&gt;getUser();
+      <pre class="term php">$user = $this-&gt;security-&gt;getUser();
 assert($user instanceof ApiUser);
 new CreateCollection(
     playerId: $user-&gt;getPlayer()…
@@ -759,7 +759,7 @@ new CreateCollection(
     </div>
     <div>
       <span class="label">B · MIDDLEWARE</span>
-      <pre class="term">if ($message instanceof UserAware
+      <pre class="term php">if ($message instanceof UserAware
     &amp;&amp; !$envelope-&gt;last(ReceivedStamp::class)) {
   $message = $message-&gt;withUserId(
     $this-&gt;security-&gt;getUser()…
@@ -814,7 +814,7 @@ new CreateCollection(
 <section class="slide">
   <h3>FILTERING + VALIDATION <mark>FOR FREE</mark></h3>
   <p class="file">src/Api/V1/PuzzleLeaderboardResponse.php · PR #477</p>
-  <pre class="term sm">'type' =&gt; new QueryParameter(
+  <pre class="term sm php">'type' =&gt; new QueryParameter(
     key: 'type',
     constraints: [new <mark>Choice</mark>(choices: ['solo', 'duo', 'team'])],
 ),
@@ -835,7 +835,7 @@ new CreateCollection(
 <section class="slide">
   <h3>PAGINATION</h3>
   <p class="file">src/Api/V1/PuzzleLeaderboardResponseProvider.php · PR #477</p>
-  <pre class="term">$total  = count($rows);
+  <pre class="term php">$total  = count($rows);
 $offset = ($page - 1) * $limit;
 $entries = array_slice($rows, $offset, $limit);
 
@@ -864,7 +864,7 @@ Content-Type: application/problem+json
 <section class="slide">
   <h3>BODY VALIDATION · WHEN ATTRIBUTES AREN'T ENOUGH</h3>
   <p class="file">src/Api/V1/CreateSolvingTimeInput.php</p>
-  <pre class="term sm"><span class="k">#[Assert\Regex('/^\d{1,2}:\d{2}(:\d{2})?$/', message: 'Time must be in format HH:MM:SS or MM:SS')]</span>
+  <pre class="term sm php"><span class="k">#[Assert\Regex('/^\d{1,2}:\d{2}(:\d{2})?$/', message: 'Time must be in format HH:MM:SS or MM:SS')]</span>
 public string $time = '';
 
 <span class="k">#[Assert\Positive]</span>
@@ -896,7 +896,7 @@ public function validateTime(ExecutionContextInterface $context): void
 <section class="slide">
   <h3>THROWN IN THE DOMAIN</h3>
   <p class="file">src/MessageHandler/AddPuzzleSolvingTimeHandler.php</p>
-  <pre class="term">if ($message-&gt;firstAttempt) {
+  <pre class="term php">if ($message-&gt;firstAttempt) {
     $firstTry = $this-&gt;firstTryAssessor-&gt;assess(…);
 
     if ($firstTry-&gt;blocks($message-&gt;firstTryResolution)) {
@@ -915,7 +915,7 @@ final class FirstTryAlreadyTaken extends <mark>\Exception</mark></pre>
 <section class="slide">
   <h3>TRANSLATED AT THE EDGE</h3>
   <p class="file">src/Api/V1/CreateSolvingTimeProcessor.php</p>
-  <pre class="term sm">try {
+  <pre class="term sm php">try {
     $this-&gt;messageBus-&gt;dispatch(new AddPuzzleSolvingTime(…));
 } catch (HandlerFailedException $exception) {
     if ($exception-&gt;getPrevious() instanceof FirstTryAlreadyTaken) {
@@ -953,7 +953,7 @@ Content-Type: application/problem+json
 
 <section class="slide">
   <h3>TEAM B? ONE LINE.</h3>
-  <pre class="term"><span class="k">#[Post(</span>
+  <pre class="term php"><span class="k">#[Post(</span>
     messenger: 'input',
     <mark>exceptionToStatus</mark>: [FirstTryAlreadyTaken::class =&gt; 422],
 <span class="k">)]</span>
@@ -968,7 +968,7 @@ Content-Type: application/problem+json
 <section class="slide">
   <h3>OPENAPI · DOCS THAT CAN'T LIE</h3>
   <p class="file">src/Api/V1/CreateSolvingTimeInput.php</p>
-  <pre class="term sm">openapi: new OpenApiOperation(
+  <pre class="term sm php">openapi: new OpenApiOperation(
     description: 'Linking the time to an event (all optional): round_id …',
     parameters: [new Parameter(name: '<mark>Idempotency-Key</mark>', in: 'header', …)],
     responses: [
@@ -987,7 +987,7 @@ Content-Type: application/problem+json
 <section class="slide">
   <h3>CONTRACT FIRST</h3>
   <p class="file">examples/Demo/LeaderboardProvider.php · this talk's repo</p>
-  <pre class="term sm">for ($rank = $first; $rank &lt; $first + $limit; $rank++) {
+  <pre class="term sm php">for ($rank = $first; $rank &lt; $first + $limit; $rank++) {
     $items[] = new LeaderboardEntry(
         rank: $rank,
         playerName: 'Puzzler #' . $rank,     <span class="c">// fake</span>
@@ -1013,7 +1013,7 @@ AI agents        <span class="dim">internal API, ~90 scenario endpoints  </span>
 <section class="slide">
   <h3>SECURITY ① WHO ARE YOU?</h3>
   <p class="file">config/packages/security.php</p>
-  <pre class="term sm">'api' =&gt; [
+  <pre class="term sm php">'api' =&gt; [
     'pattern'   =&gt; '^/api/v1/',
     'stateless' =&gt; true,                           <span class="c">// no session, no cookie</span>
     'oauth2'    =&gt; true,                           <span class="c">// league/oauth2-server-bundle</span>
@@ -1031,7 +1031,7 @@ AI agents        <span class="dim">internal API, ~90 scenario endpoints  </span>
 
 <section class="slide">
   <h3>SECURITY ② WHAT MAY YOU DO?</h3>
-  <pre class="term sm"><span class="c">// 1. the operation: is this token allowed here at all?</span>
+  <pre class="term sm php"><span class="c">// 1. the operation: is this token allowed here at all?</span>
 security: "is_granted('ROLE_PAT') or is_granted('<mark>ROLE_OAUTH2_COLLECTIONS:WRITE</mark>')",
 
 <span class="c">// 2. the processor: the business rule → 403</span>
@@ -1303,7 +1303,7 @@ worker    ███                        <mark>3.0 ms</mark></pre>
 <section class="slide">
   <h3>THE TRAP I WALKED INTO</h3>
   <p class="file">src/Query/SearchPuzzle.php</p>
-  <pre class="term">WHERE name ILIKE :searchFullLikeQuery        <span class="c">-- trigram index ✓ (since January)</span>
+  <pre class="term sql">WHERE name ILIKE :searchFullLikeQuery        <span class="c">-- trigram index ✓ (since January)</span>
    OR identification_number <mark class="warn">ILIKE</mark> :searchFullLikeQuery     <span class="c">-- no index</span>
    OR ean <mark class="warn">ILIKE</mark> :eanSearchFullLikeQuery                     <span class="c">-- no index</span></pre>
   <p class="why"><span class="arrow">→</span> one OR arm without an index = a <mark>full table scan</mark>. every search.</p>
@@ -1314,7 +1314,7 @@ worker    ███                        <mark>3.0 ms</mark></pre>
 <section class="slide">
   <h3>THE FIX · ONE MIGRATION</h3>
   <p class="file">migrations/Version20260918131133.php · commit 6500b1a88</p>
-  <pre class="term sm">CREATE INDEX custom_puzzle_identification_number_trgm
+  <pre class="term sm sql">CREATE INDEX custom_puzzle_identification_number_trgm
     ON puzzle USING GIN (identification_number <mark>gin_trgm_ops</mark>);
 CREATE INDEX custom_puzzle_ean_trgm
     ON puzzle USING GIN (ean gin_trgm_ops);</pre>
@@ -1330,7 +1330,7 @@ CREATE INDEX custom_puzzle_ean_trgm
 <section class="slide">
   <h3>AND THE TEST DIDN'T MOVE</h3>
   <p class="file">tests/Controller/Api/V1/PuzzleSearchEndpointTest.php · untouched by the fix</p>
-  <pre class="term sm">$browser-&gt;request('GET', '/api/v1/puzzles', ['query' =&gt; 'RB-500-001']);
+  <pre class="term sm php">$browser-&gt;request('GET', '/api/v1/puzzles', ['query' =&gt; 'RB-500-001']);
 
 $this-&gt;assertResponseIsSuccessful();
 $this-&gt;assertSame([PuzzleFixture::PUZZLE_500_01], $this-&gt;ids(…));</pre>

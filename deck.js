@@ -127,6 +127,60 @@
     })();
   }
 
+  /* ---------- syntax highlighting: pre.term.php / pre.term.sql ----------
+     Runs once at boot. Only plain text is tokenized: anything already wrapped by hand
+     (<mark>, .c, .k, .s, .dim) keeps its own colour. */
+
+  var SYNTAX = {
+    php: { names: ['com', 'attr', 'str', 'var', 'kw', 'type', 'fn', 'num'],
+      rx: new RegExp([
+        '(\\/\\/[^\\n]*|\\/\\*[\\s\\S]*?\\*\\/|#(?!\\[)[^\\n]*)',
+        '(#\\[[A-Za-z_\\\\]+)',
+        "('(?:[^'\\\\\\n]|\\\\.)*'|\"(?:[^\"\\\\\\n]|\\\\.)*\")",
+        '(\\$[A-Za-z_]\\w*)',
+        '\\b(abstract|array|as|bool|catch|class|const|default|else|elseif|enum|extends|false|final|float|fn|for|foreach|function|if|implements|instanceof|int|interface|match|mixed|namespace|never|new|null|private|protected|public|readonly|return|self|static|string|throw|true|try|use|void|while)\\b',
+        '(\\b[A-Z][a-z]\\w*(?:\\\\[A-Z]\\w*)*)',
+        '(\\b[a-z_]\\w*(?=\\())',
+        '(\\b\\d[\\d_]*(?:\\.\\d+)?\\b)'
+      ].join('|'), 'g') },
+    sql: { names: ['com', 'str', 'var', 'kw', 'num'],
+      rx: new RegExp([
+        '(--[^\\n]*)',
+        "('(?:[^'\\n])*')",
+        '(:[A-Za-z_]\\w*)',
+        '\\b(SELECT|FROM|WHERE|AND|OR|NOT|ORDER|BY|DESC|ASC|CREATE|INDEX|IF|EXISTS|ON|USING|GIN|ILIKE|LIKE|JOIN|INNER|LEFT|UNION|IN|AS|COUNT|IS|NULL|LIMIT|OFFSET|GROUP)\\b',
+        '(\\b\\d+\\b)'
+      ].join('|'), 'g') }
+  };
+
+  function highlight(pre, lang) {
+    var spec = SYNTAX[lang], walker = document.createTreeWalker(pre, NodeFilter.SHOW_TEXT), nodes = [];
+    while (walker.nextNode()) nodes.push(walker.currentNode);
+    nodes.forEach(function (t) {
+      for (var p = t.parentNode; p && p !== pre; p = p.parentNode) {
+        if (p.matches('mark, .c, .k, .s, .dim, .syn')) return;
+      }
+      var s = t.nodeValue, frag = document.createDocumentFragment(), last = 0, m;
+      spec.rx.lastIndex = 0;
+      while ((m = spec.rx.exec(s))) {
+        if (!m[0]) { spec.rx.lastIndex++; continue; }
+        var g = 1; while (m[g] === undefined) g++;
+        frag.appendChild(document.createTextNode(s.slice(last, m.index)));
+        var span = document.createElement('span');
+        span.className = 'syn ' + spec.names[g - 1];
+        span.textContent = m[0];
+        frag.appendChild(span);
+        last = spec.rx.lastIndex;
+      }
+      if (last === 0) return;
+      frag.appendChild(document.createTextNode(s.slice(last)));
+      t.parentNode.replaceChild(frag, t);
+    });
+  }
+
+  Array.prototype.forEach.call(document.querySelectorAll('pre.term.php'), function (el) { highlight(el, 'php'); });
+  Array.prototype.forEach.call(document.querySelectorAll('pre.term.sql'), function (el) { highlight(el, 'sql'); });
+
   /* ---------- navigation ---------- */
 
   function show(i, push, backwards) {
