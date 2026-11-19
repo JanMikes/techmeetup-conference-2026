@@ -1005,8 +1005,10 @@ worker    ███                        <mark>3.0 ms</mark></pre>
 <span class="step">1 Jan    15:16  fix #1: reset via reflection on a private property</span>
 <span class="step">3 Jan    17:07  <mark>fix #2: the real one</mark></span></pre>
   <div class="big am step">3 days 14 h</div>
+  <p class="why step"><span class="arrow">→</span> and the upstream fix? reported the same afternoon. <mark>still open.</mark> day 324.</p>
   <div class="act">act 2 · war story</div>
-  <aside class="notes-src">Ask for guesses first. Close with: "<b>Karma ships to production faster than I do.</b>"</aside>
+  <aside class="notes-src">Ask for guesses first. Close with: "<b>Karma ships to production faster than I do.</b>"
+  Last click: "And upstream? I reported it the same afternoon." Pause. "<b>Still open.</b>" Don't name the bundle yet: the close reveals it (issue auth0/symfony #227, opened 31 Dec 2025 14:40 CET, 0 comments, checked 19 Nov 2026).</aside>
 </section>
 
 <section class="slide">
@@ -1157,9 +1159,15 @@ $this-&gt;assertSame([PuzzleFixture::PUZZLE_500_01], $this-&gt;ids(…));</pre>
 <section class="slide s-statement">
   <h3>WHO KEPT THE USER IN MEMORY?</h3>
   <h1>THE <mark class="bad">AUTH0</mark><br>BUNDLE.</h1>
-  <p class="after">unmaintained. I ended up running dev-main from my own fork.</p>
+  <p class="after">I ran my own fork. and my bug report?</p>
+  <pre class="term sm step">auth0/symfony <mark>#227</mark>  "causes authentication leak in worker mode"
+opened     31 Dec 2025, 14:40   <span class="dim"># the same afternoon</span>
+comments   0
+releases   5.7 · 5.8 · 5.9 · 6.0-beta   <span class="dim"># none with the fix</span>
+status     OPEN · day 324</pre>
   <div class="act">close</div>
-  <aside class="notes-src">The callback lands. "I outsourced auth so I'd never have to think about it. <b>Then I thought about it for three months.</b>"</aside>
+  <aside class="notes-src">The callback lands. Click: read the receipt slowly, end on "day 324".
+  Checked 19 Nov 2026: upstream src/Service.php still caches the SDK without ResetInterface; the only activity on the issue is a "Scope: Bug" label (12 Mar 2026). "I outsourced auth so I'd never have to think about it. <b>Then I thought about it for three months.</b>"</aside>
 </section>
 
 <section class="slide s-image">
