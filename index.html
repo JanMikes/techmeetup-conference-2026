@@ -1097,6 +1097,22 @@ worker    ███                        <mark>3.0 ms</mark></pre>
 </section>
 
 <section class="slide">
+  <h3>OBSERVABILITY · WHAT'S DIFFERENT FOR THE API?</h3>
+  <h2><mark>NOTHING.</mark> IT'S THE SAME APP.</h2>
+  <div class="deflist">
+    <div><span class="k">Sentry</span>every request a transaction, every query a span</div>
+    <div><span class="k">Messenger</span>same handlers, same failure reports</div>
+    <div><span class="k">Grafana</span>same containers, nothing new to scrape</div>
+    <div><span class="k">API only</span><span class="dim">requests per token · ApiUsageSubscriber</span></div>
+  </div>
+  <p class="why"><span class="arrow">→</span> instrument the app once. the API is just another door into it.</p>
+  <div class="act">act 3 · living with it</div>
+  <aside class="notes-src">"People ask: how do you monitor the API? <b>The same way as the website.</b> It's the same kernel, the same handlers, the same database. Sentry's Symfony bundle hooks the kernel events, so an API call is a transaction like any page view, with its SQL spans. Messenger reports a failed command once, whether the web form or an API call sent it."
+  "The one thing that's API-only: an event subscriber counting requests per token, on kernel.terminate, after the response is gone. Because 'which client is calling what' is a question the website never had."
+  Real: config/packages/sentry.php (tracing, dbal spans, messenger), src/EventSubscriber/ApiUsageSubscriber.php.</aside>
+</section>
+
+<section class="slide">
   <h3>THE ONE PERFORMANCE ALERT</h3>
   <pre class="term">p90(span.duration) &gt; 500 ms   for 30 min
   <mark>EXCLUDING</mark>

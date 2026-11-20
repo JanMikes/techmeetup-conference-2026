@@ -277,7 +277,7 @@ Each chapter only uses what an earlier one explained. The promise (11) maps the 
 | 54–56 | **Midpoint** | remember the world champions → record math (4 endpoints) → speaking of speed | |
 | 57–64 | **Worker mode** | PHP is slow → classic PHP meme → worker mode → "stateless anyway (supposed to be)" → predict → 8× (benchmark, /me) → production 23 ms (all endpoints) → PHP alive | "BUT." |
 | 64–72 | **War story** | CineStar → 31 Dec deploy → sleep meme → inbox → one sign-on → 3 days 14 h → lesson → open loop | "how do I know before 50 emails?" |
-| 73–80 | **Act 3** | agenda → observability → the one alert → feels slow → the trap → one migration → test didn't move → what to log (agents audit) | |
+| 73–80 | **Act 3** | agenda → observability → "what is different for the API? nothing" → the one alert → feels slow → the trap → one migration → test didn't move → what to log (agents audit) | |
 | 81–82 | **Callback** | "remember the example endpoint? · why it took 4 minutes" (merged into one slide; the PR resource slide is also "the example endpoint" now) | |
 | 83–89 | **Close** | the decision I'd undo → Auth0 (closes the loop) → wet ink → spread the word (undo #2 "waiting 2 years" cut) → thank you (the "as promised" recap was cut) | |
 
