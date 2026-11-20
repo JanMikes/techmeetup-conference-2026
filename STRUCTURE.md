@@ -306,3 +306,4 @@ The user confirmed that the cold-open flow works: intro → today's endpoint (Cl
 - END TO END · READ is split: ① the resource (MyCollectionsResponse) and ② the provider + the GetPlayerCollections SQL.
 - New slide after THE LAYERS: "SYNTAX SUGAR · THE GOOD KIND / THE MAGIC WE WANT": what API Platform does (magic) vs what I write (explicit), with "best of both worlds". It also answers "why not a controller".
 - THE LAYERS rows are now API READ · API WRITE · WEB READ (page → Controller → same Query/SQL) · WEB WRITE (form → Controller → same Command/Entity).
+- END TO END · READ is now three slides: ① the resource, ② the provider (the whole class with @implements), ③ the query (the whole GetPlayerCollections class, SQL verbatim).

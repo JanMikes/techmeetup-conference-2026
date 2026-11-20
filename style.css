@@ -797,3 +797,4 @@ a.quiet:hover { color: var(--green); }
   .mlist li { padding-left: 1.1rem; }
   .mnote { font-size: 0.7rem; }
 }
+.term.tight { line-height: 1.38; padding-top: 0.9rem; padding-bottom: 0.9rem; }

@@ -581,27 +581,59 @@ final class MyCollectionsResponse
 
 <section class="slide">
   <h3>END TO END · READ ② THE PROVIDER</h3>
-  <p class="file">src/Api/V1/MyCollectionsResponseProvider.php · src/Query/GetPlayerCollections.php</p>
-  <pre class="term sm php">public function provide(Operation $operation, …): MyCollectionsResponse
+  <p class="file">src/Api/V1/MyCollectionsResponseProvider.php</p>
+  <pre class="term sm tight php"><span class="c">/** @implements <mark>ProviderInterface</mark>&lt;MyCollectionsResponse&gt; */</span>
+final readonly class MyCollectionsResponseProvider implements ProviderInterface
 {
-    $playerId = $this-&gt;security-&gt;getUser()-&gt;getPlayer()-&gt;id-&gt;toString();
+    public function __construct(
+        private Security $security,
+        private GetPlayerCollections $getPlayerCollections,
+    ) {}
 
-    $collections = $this-&gt;<mark>getPlayerCollections</mark>-&gt;byPlayerId($playerId, includePrivate: true);
+    public function provide(Operation $operation, …): MyCollectionsResponse
+    {
+        $user = $this-&gt;security-&gt;getUser();
+        assert($user instanceof ApiUser);
+        $playerId = $user-&gt;getPlayer()-&gt;id-&gt;toString();
 
-    $responses = array_map(fn ($c) =&gt; new CollectionResponse(
-        collectionId: $c-&gt;collectionId, name: $c-&gt;name,
-        description: $c-&gt;description, visibility: $c-&gt;visibility-&gt;value,
-    ), $collections);
-
-    return new MyCollectionsResponse($playerId, count($responses), $responses);
+        $collections = $this-&gt;<mark>getPlayerCollections</mark>-&gt;byPlayerId($playerId, includePrivate: true);
+        $responses = array_map(fn ($c) =&gt; new CollectionResponse(…), $collections);
+        return new MyCollectionsResponse($playerId, count($responses), $responses);
+    }
 }</pre>
-  <pre class="term sm sql"><span class="c">-- GetPlayerCollections: SQL straight into a read DTO</span>
-SELECT id, name, description, visibility, created_at, player_id
-FROM collection WHERE player_id = :playerId ORDER BY created_at DESC</pre>
-  <p class="why"><span class="arrow">→</span> the provider is glue. the website uses the <mark>same query</mark>.</p>
+  <p class="why"><span class="arrow">→</span> the provider is <mark>glue</mark>: who's asking → ask the read side → map to the response.</p>
   <div class="act">act 1 · end to end</div>
-  <aside class="notes-src">"The provider is glue: who's asking, ask the read side, map to the response. <b>The query already existed for the collections page</b>." (GetPlayerCollections is also used by PuzzleLibraryController, PuzzleAddController and others.)
-  Trimmed: the unused $uriVariables/$context parameters, the ApiUser assert, and the virtual "Default Collection" that is prepended when the player has items outside any collection.</aside>
+  <aside class="notes-src">"One interface, one method. API Platform calls provide() for the GET and serializes whatever object I return. No Request, no Response."
+  Trimmed: the unused $uriVariables/$context parameters, the GetCollectionItems dependency and the virtual "Default Collection" prepended when the player has items outside any collection, and the CollectionResponse constructor arguments (collectionId, name, description, visibility).</aside>
+</section>
+
+<section class="slide">
+  <h3>END TO END · READ ③ THE QUERY</h3>
+  <p class="file">src/Query/GetPlayerCollections.php</p>
+  <pre class="term sm tight php">readonly final class GetPlayerCollections
+{
+    public function __construct(private Connection $database) {}
+    <span class="c">/** @return array&lt;CollectionOverview&gt; */</span>
+    public function byPlayerId(string $playerId, bool $includePrivate = true): array
+    {
+        $visibilityCondition = $includePrivate ? '' : "AND visibility = 'public'";
+        $query = &lt;&lt;&lt;SQL
+SELECT id, name, description, visibility, created_at, player_id
+FROM collection
+WHERE player_id = :playerId {$visibilityCondition}
+ORDER BY created_at DESC
+SQL;
+        $data = $this-&gt;database-&gt;executeQuery($query, ['playerId' =&gt; $playerId])-&gt;fetchAllAssociative();
+        return array_map(static fn (array $row) =&gt; new <mark>CollectionOverview</mark>(
+            playerId: $row['player_id'], collectionId: $row['id'], name: $row['name'],
+            description: $row['description'], visibility: CollectionVisibility::from($row['visibility']),
+        ), $data);
+    }
+}</pre>
+  <p class="why"><span class="arrow">→</span> plain SQL into a read DTO. no entity. the website uses the <mark>same query</mark>.</p>
+  <div class="act">act 1 · end to end</div>
+  <aside class="notes-src">"The query already existed for the collections page. <b>The API just got a new door to it.</b>" GetPlayerCollections is also used by PuzzleLibraryController, PuzzleAddController, PuzzlePickerController and others.
+  Reformatted to fit: the constructor and executeQuery are on one line each, the closure is an arrow function, and the @var row-shape docblock is trimmed. The SQL is verbatim.</aside>
 </section>
 
 <section class="slide">
