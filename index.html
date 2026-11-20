@@ -819,9 +819,9 @@ readonly final class CreateCheckoutSessionHandler
     ],
 )</pre>
   <p class="why"><span class="arrow">→</span> declared, not coded. and it lands in the OpenAPI docs.</p>
-  <p class="why step"><span class="arrow">→</span> <span class="k">?limit=1000</span> → <mark>422</mark> problem+json: "limit: This value should be between 1 and 100."</p>
+  <p class="why"><span class="arrow">→</span> <span class="k">?limit=1000</span> → <mark>422</mark> problem+json: "limit: This value should be between 1 and 100."</p>
   <div class="act">act 2 · production</div>
-  <aside class="notes-src">Click: "I asked for a thousand. <b>It said no.</b>" problem+json (RFC 9457), every client library understands it.
+  <aside class="notes-src">Bottom line: "I asked for a thousand. <b>It said no.</b>" problem+json (RFC 9457), every client library understands it.
   Symfony Validator constraints on query parameters. The same declaration drives validation and documentation.</aside>
 </section>
 
