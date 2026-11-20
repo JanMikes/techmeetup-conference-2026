@@ -954,8 +954,8 @@ AI agents        <span class="dim">internal API, ~90 scenario endpoints  </span>
     ],
 ],
 'access_control' =&gt; [
-    ['path' =&gt; '^/api/v1/me', 'roles' =&gt; [PatUser::ROLE, OAuth2User::ROLE</mark>,
-    ['path' =&gt; '^/api/v1/players/.*/results', 'roles' =&gt; <mark>[OAuth2Scope::ResultsRead</mark>-&gt;role()</mark>,
+    ['path' =&gt; '^/api/v1/me', 'roles' =&gt; [PatUser::ROLE, OAuth2User::ROLE]],
+    ['path' =&gt; '^/api/v1/players/.*/results', 'roles' =&gt; [<mark>OAuth2Scope::ResultsRead-&gt;role()</mark>]],
 ],</pre>
   <p class="why"><span class="arrow">→</span> scopes become roles. a whole path is closed even if an endpoint forgets.</p>
   <div class="act">act 2 · production</div>
