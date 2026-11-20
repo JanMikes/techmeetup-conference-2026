@@ -273,7 +273,7 @@ Each chapter only uses what an earlier one explained. The promise (11) maps the 
 | 34–38 | **Putting it together** | layers diagram → end to end read (one slide) → write: input, processor, handler → "that was team A" | "five classes. is that a lot?" |
 | 39–42 | **Team A vs B** | team B (return value = response) → $userId → hands up (trade-off line) → my rule | act 2: "is it any good?" |
 | 43–49 | **Act 2 · what comes in** | agenda → filters + 422 → pagination → body validation → limit of validation → thrown in the domain → translated at the edge | |
-| 50–53 | **Docs + security** | OpenAPI as code → 3 kinds of caller → who are you → what may you do | midpoint |
+| 50–53 | **Security** | 3 kinds of caller → who are you → what may you do | midpoint |
 | 54–56 | **Midpoint** | remember the world champions → record math (4 endpoints) → speaking of speed | |
 | 57–63 | **Worker mode** | PHP is slow → classic PHP meme → worker mode → predict → 14× → production 23 ms → PHP alive | "BUT." |
 | 64–72 | **War story** | CineStar → 31 Dec deploy → sleep meme → inbox → one sign-on → 3 days 14 h → lesson → open loop | "how do I know before 50 emails?" |
@@ -310,7 +310,7 @@ The user confirmed that the cold-open flow works: intro → today's endpoint (Cl
 - Code pass: every code block shows its class/operation context, the key operation is marked, and details are /* comments */. The "WHERE DOES $userId COME FROM?" slide is cut, and team B no longer shows UserAware/WithUserId. The MSP way stays: the processor passes the player id explicitly.
 - After WRITE ③: a new statement "TEAM A · THIS WAS THE CLEAN WAY. or… even more pragmatic?", then team B ① the message (messenger: 'input') and ② the handler returning CheckoutSessionResponse (HandledStamp). The "that was team A" row is removed from the handler slide.
 - PAGINATION is rebuilt as request (?page=2&limit=20) → provider (page/limit from $operation->getParameters(), the declared QueryParameters, then array_slice) → response JSON. No pseudo SQL.
-- After TRANSLATED AT THE EDGE: "THE PRAGMATIC VARIANT · NO TRY/CATCH": messenger: 'input' (API Platform unwraps HandlerFailedException) + exceptionToStatus [FirstTryAlreadyTaken => 422], or the global exception_to_status map.
+- (removed 2026-11-20, with the OpenAPI slide) After TRANSLATED AT THE EDGE: "THE PRAGMATIC VARIANT · NO TRY/CATCH": messenger: 'input' (API Platform unwraps HandlerFailedException) + exceptionToStatus [FirstTryAlreadyTaken => 422], or the global exception_to_status map.
 - War story: the 31 DEC deploy-log slide is cut. The "good night" slide now shows a real GitHub screenshot (the 31 Dec commits 02:29/02:34/03:04 CET plus Release #942, re-run 03:31:47 CET of 0f19226, Success) in place of the AI meme. The failed deploys are told in the notes.
 - The classic-PHP meme is cut; its line moved to the notes of WORKER MODE.
 - "HOW LONG UNTIL IT WAS REALLY FIXED?" is cut. The timeline moved to THE LESSON's notes; the upstream issue (#227, day 324) is shown only in the close.

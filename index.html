@@ -933,48 +933,6 @@ if ($realException instanceof FirstTryAlreadyTaken) {
 </section>
 
 <section class="slide">
-  <h3>THE PRAGMATIC VARIANT · NO TRY/CATCH</h3>
-  <pre class="term sm php">#[ApiResource(operations: [
-    new Post(
-        uriTemplate: '/v1/me/solving-times',
-        <mark>messenger: 'input'</mark>,              // API Platform dispatches… and unwraps HandlerFailedException
-        exceptionToStatus: [
-            FirstTryAlreadyTaken::class =&gt; <mark>422</mark>,
-        ],
-    ),
-])]
-final class AddPuzzleSolvingTime { /* the command is the resource, as team B */ }
-
-// or once for the whole API · config/packages/api_platform.php
-'exception_to_status' =&gt; [FirstTryAlreadyTaken::class =&gt; 422],</pre>
-  <pre class="term sm"><span class="dim">→</span> 422 application/problem+json  { "detail": "<i>the exception's message</i>" }</pre>
-  <p class="why"><span class="arrow">→</span> zero translation code. the price: one generic error, the exception's message <mark>is</mark> the API.</p>
-  <div class="act">act 2 · production</div>
-  <aside class="notes-src">"If you don't need a custom error body: let API Platform do it. With messenger: 'input' its own processor dispatches the message and <b>unwraps HandlerFailedException for you</b>; exceptionToStatus turns your domain exception into a status code."
-  Honest: MSP doesn't do this for first tries, because the 422 carries a structured detail (which attempt blocked it) and the website needs a different message. Illustrative, not MSP code: API Platform's Symfony\Messenger\Processor uses the (internal) DispatchTrait that unwraps; exceptionToStatus works per operation or globally (MSP already uses the global map for serializer and lock errors).</aside>
-</section>
-
-<section class="slide">
-  <h3>OPENAPI · DOCS THAT CAN'T LIE</h3>
-  <p class="file">src/Api/V1/CreateSolvingTimeInput.php</p>
-  <pre class="term sm php">new Post(
-    uriTemplate: '/v1/me/solving-times',
-    openapi: new OpenApiOperation(
-        description: 'Linking the time to an event (all optional): round_id …',
-        parameters: [new Parameter(name: '<mark>Idempotency-Key</mark>', in: 'header')],
-        responses: [
-            '422' =&gt; new OpenApiResponse(description: 'a first attempt already recorded, …'),
-            '404' =&gt; new OpenApiResponse(description: 'round_id unknown, nothing is saved'),
-        ],
-    ),
-)</pre>
-  <p class="why"><span class="arrow">→</span> schemas come from the DTOs. the edge cases live <mark>next to the code that throws them</mark>.</p>
-  <div class="act">act 2 · production</div>
-  <aside class="notes-src">"Types, required fields, constraints: generated. What you write by hand is the part only you know: the edge cases."
-  /api/docs with an OAuth2 "Authorize" button. <b>TODO:</b> optional Swagger UI screenshot once the stack runs.</aside>
-</section>
-
-<section class="slide">
   <h3>ONE CODEBASE · 3 KINDS OF CALLER</h3>
   <pre class="diagram">OAuth2 apps      <span class="dim">scopes → roles                        </span>─┐
 personal tokens  <span class="dim">Authorization: Token msp_pat_…        </span>─┼─▶  <mark>ApiUser</mark>  ─▶  same commands
