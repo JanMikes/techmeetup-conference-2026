@@ -1046,14 +1046,14 @@ worker    ███                        <mark>3.0 ms</mark></pre>
 </section>
 
 <section class="slide">
-  <h3>PRODUCTION · LAST 30 DAYS · ~10M REQUESTS</h3>
+  <h3>PRODUCTION · THE WHOLE WEBSITE + API · LAST 30 DAYS · ~10M REQUESTS</h3>
   <div class="numbers">
     <div><span class="n">23 ms</span><span>p50</span></div>
     <div><span class="n">115 ms</span><span>p95</span></div>
   </div>
-  <p class="why"><span class="arrow">→</span> worker mode in production, all endpoints. 3 ms was the lightest one, in a benchmark.</p>
+  <p class="why"><span class="arrow">→</span> worker mode in production: every page and every API call. 3 ms was the lightest API endpoint, in a benchmark.</p>
   <div class="act">act 2 · production</div>
-  <aside class="notes-src">Source: Sentry, all transactions, 30 days to 19 Nov 2026.</aside>
+  <aside class="notes-src">Source: Sentry, all transactions (website pages and API), 30 days to 19 Nov 2026.</aside>
 </section>
 
 <section class="slide s-image">
