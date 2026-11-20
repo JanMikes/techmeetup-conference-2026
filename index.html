@@ -789,7 +789,7 @@ readonly final class CreateCheckoutSessionHandler
 <section class="slide s-rule">
   <h3>ACT 2</h3>
   <h1>PRODUCTION-<br>GRADE</h1>
-  <p class="agenda">validation · domain errors · docs · security · speed · and how it bites</p>
+  <p class="agenda">validation · domain errors · docs · security · speed</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src">"Fine, it's cheap. Is it any good?"</aside>
 </section>
@@ -1097,77 +1097,9 @@ worker    ███                        <mark>3.0 ms</mark></pre>
        sizes="100vw" alt="A cartoon elephant in a hospital bed giving a thumbs up" width="1920" height="1097" decoding="async">
   <p class="cap">PHP in 2026: "dead" since 2008. <mark>23 ms p50.</mark></p>
   <div class="act">act 2 · production</div>
-  <aside class="notes-src">Three seconds. Then the tone changes.</aside>
+  <aside class="notes-src">Three seconds. Then on to: how do I know it keeps working?</aside>
 </section>
 
-<section class="slide s-statement">
-  <h1><mark class="bad">BUT.</mark></h1>
-  <div class="act">act 2 · war story</div>
-  <aside class="notes-src"><b>Long pause.</b> Lower your voice.</aside>
-</section>
-
-<section class="slide">
-  <h3>NOVEMBER 2025 · A BIG CINEMA CHAIN HERE</h3>
-  <p class="headline">"The website logged fans into other people's accounts."</p>
-  <p class="source">CineStar, the Traitors finale ticket rush · nafilmu.cz, refresher.cz (paraphrased and translated)</p>
-  <p class="why step"><span class="arrow">→</span> I laughed. how can that happen to a company that size?</p>
-  <div class="act">act 2 · war story</div>
-  <aside class="notes-src">Tell it straight. Click: "<b>I laughed.</b>" Then: "Six weeks later."</aside>
-</section>
-
-<section class="slide s-image">
-  <h2 class="visually-hidden">31 Dec 2025: the commits and the deploy that went live</h2>
-  <p class="cap top">WORKER MODE: <mark>ON</mark> · GOOD NIGHT</p>
-  <img src="assets/img/nye-deploy-1440.webp"
-       srcset="assets/img/nye-deploy-960.webp 960w, assets/img/nye-deploy-1440.webp 1440w, assets/img/nye-deploy-1920.webp 1920w"
-       sizes="100vw" alt="GitHub: commits on 31 Dec 2025 at 02:29, 02:34 and 03:04 CET, and Release #942 re-run at 03:31:47 CET for commit 0f19226, status Success" width="1920" height="608" decoding="async">
-  <p class="cap">what could <mark class="bad">possibly</mark> go wrong?</p>
-  <p class="source">github.com/MySpeedPuzzling/myspeedpuzzling.com · commits on 31 Dec 2025 · actions run 20610258850, attempt 2</p>
-  <div class="act">act 2 · war story</div>
-  <aside class="notes-src">"New Year's Eve. <b>2:29 a.m.</b>: FrankenPHP worker mode fix. Then 2:34, then 3:04. Three deploys in a row <b>failed</b>. Did I stop? No. <b>I pressed Re-run.</b> 3:31, success, live at 3:35. And I went to sleep." Pause on the bottom line.
-  Facts: the deployed commit is 0f19226 (head of the night, includes d203a1a "FrankenPHP Worker mode fix"). Release runs for d203a1a, 742f0ca and 0f19226 failed at 02:36, 02:38 and 03:09; the re-run (attempt 2) of 0f19226 succeeded, 3m 30s. Timestamps shown in CET (GitHub renders relative times; converted for the screenshot).</aside>
-</section>
-
-<section class="slide s-image">
-  <h2 class="visually-hidden">The inbox on New Year's morning</h2>
-  <img src="assets/memes/inbox-1440.webp"
-       srcset="assets/memes/inbox-960.webp 960w, assets/memes/inbox-1440.webp 1440w, assets/memes/inbox-1920.webp 1920w"
-       sizes="100vw" alt="A mail inbox full of urgent bug reports on 1 January" width="1920" height="1080" decoding="async">
-  <p class="cap">1 JAN 2026 · 50 unread</p>
-  <div class="act">act 2 · war story</div>
-  <aside class="notes-src">"New Year's morning. I wake up to <b>fifty emails</b>. URGENT. CRITICAL. BUG. I log in myself… <b>I'm someone else.</b> Refresh. <b>Someone else again.</b>" Mock inbox, fake senders.</aside>
-</section>
-
-<section class="slide s-image">
-  <h2 class="visually-hidden">One sign-on for everyone</h2>
-  <img src="assets/memes/one-signon-1440.webp"
-       srcset="assets/memes/one-signon-960.webp 960w, assets/memes/one-signon-1440.webp 1440w, assets/memes/one-signon-1920.webp 1920w"
-       sizes="100vw" alt="A crowd of people all wearing the same mask" width="1920" height="1097" decoding="async">
-  <p class="cap">perfect single sign-on. <mark>one sign-on. for everyone.</mark></p>
-  <div class="act">act 2 · war story</div>
-  <aside class="notes-src">"Identity roulette. Every user on the site was <b>the last person who logged in</b>. New Year, new me — for everyone."</aside>
-</section>
-
-<section class="slide">
-  <h3>THE LESSON</h3>
-  <pre class="term warn">worker mode doesn't make your code stateful.
-<mark class="warn">it reveals it.</mark>
-
-→ <mark>reset</mark> at the START of every request
-→ 52 services implement ResetInterface
-→ stateless: true, everywhere
-→ the rule lives in CLAUDE.md</pre>
-  <div class="act">act 2 · war story</div>
-  <aside class="notes-src">If asked how long the fix took: worker mode off by hand around 9 a.m., a first fix on 1 Jan, the real one on 3 Jan (3 days 14 h).
-  "A worker without reset is a hotel that doesn't clean the rooms. The next guest finds the toothbrush… <b>and the previous guest's user id.</b>"</aside>
-</section>
-
-<section class="slide s-statement">
-  <h1>WHO KEPT<br>THE USER<br>IN <mark>MEMORY</mark>?</h1>
-  <p class="after">a third-party bundle. hold that thought.</p>
-  <div class="act">act 2 · war story</div>
-  <aside class="notes-src"><b>Leave it open.</b> It comes back in the close. Act 2 reset.</aside>
-</section>
 
 <!-- ===================== ACT 3 — LIVING WITH IT ===================== -->
 
@@ -1176,7 +1108,7 @@ worker    ███                        <mark>3.0 ms</mark></pre>
   <h1>LIVING<br>WITH IT</h1>
   <p class="agenda">measure · alert · fix in an afternoon</p>
   <div class="act">act 3 · living with it</div>
-  <aside class="notes-src">"So how do I know it works — before fifty emails tell me?"</aside>
+  <aside class="notes-src">"So how do I know it works in production — before users tell me?"</aside>
 </section>
 
 <section class="slide">
@@ -1287,36 +1219,6 @@ CREATE INDEX custom_puzzle_ean_trgm
 
 <!-- ===================== CLOSE ===================== -->
 
-<section class="slide s-rule">
-  <h3>CLOSE</h3>
-  <h1>THE DECISION<br>I'D UNDO</h1>
-  <div class="act">close</div>
-  <aside class="notes-src">One. And it answers the open question from the war story.</aside>
-</section>
-
-<section class="slide s-statement">
-  <h3>WHO KEPT THE USER IN MEMORY?</h3>
-  <h1>THE <mark class="bad">AUTH0</mark><br>BUNDLE.</h1>
-  <p class="after">I ran my own fork. and my bug report?</p>
-  <pre class="term sm step">auth0/symfony <mark>#227</mark>  "causes authentication leak in worker mode"
-opened     31 Dec 2025, 14:40   <span class="dim"># the same afternoon</span>
-comments   0
-releases   5.7 · 5.8 · 5.9 · 6.0-beta   <span class="dim"># none with the fix</span>
-status     OPEN · day 324</pre>
-  <div class="act">close</div>
-  <aside class="notes-src">The callback lands. Click: read the receipt slowly, end on "day 324".
-  Checked 19 Nov 2026: upstream src/Service.php still caches the SDK without ResetInterface; the only activity on the issue is a "Scope: Bug" label (12 Mar 2026). "I outsourced auth so I'd never have to think about it. <b>Then I thought about it for three months.</b>"</aside>
-</section>
-
-<section class="slide s-image">
-  <h2 class="visually-hidden">The wet-ink signature</h2>
-  <img src="assets/memes/wet-ink-1440.webp"
-       srcset="assets/memes/wet-ink-960.webp 960w, assets/memes/wet-ink-1440.webp 1440w, assets/memes/wet-ink-1920.webp 1920w"
-       sizes="100vw" alt="A developer signing a parchment with a quill by candlelight" width="1920" height="1097" decoding="async">
-  <p class="cap">2026: getting <mark>my own</mark> users' password hashes back</p>
-  <div class="act">close</div>
-  <aside class="notes-src">"A paid plan, a PGP key, and a <b>wet-ink executive signature</b>. In 2026. I had to find a pen."</aside>
-</section>
 
 <section class="slide s-statement">
   <h1>SPREAD<br>THE <mark>WORD</mark>.</h1>
@@ -1341,7 +1243,110 @@ status     OPEN · day 324</pre>
     </div>
   </div>
   <div class="act">close</div>
-  <aside class="notes-src">Leave it up during Q&amp;A. "The slides are on janmikes.cz." The deck itself lives at techmeetup-conference-2026.janmikes.cz.</aside>
+  <aside class="notes-src">Leave it up during Q&amp;A. If time is left, go on: the bonus war story follows (worker mode incident + Auth0). "The slides are on janmikes.cz." The deck itself lives at techmeetup-conference-2026.janmikes.cz.</aside>
+</section>
+
+<!-- ===================== BONUS — only if there is time left ===================== -->
+
+<section class="slide s-statement">
+  <h3>BONUS · THE WAR STORY</h3>
+  <h1><mark class="bad">BUT.</mark></h1>
+  <div class="act">bonus · war story</div>
+  <aside class="notes-src">Only if there is time left after THANK YOU (before Q&amp;A). Links back to worker mode: "Remember the 8× faster? <b>But.</b>" <b>Long pause.</b> Lower your voice.</aside>
+</section>
+
+<section class="slide">
+  <h3>NOVEMBER 2025 · A BIG CINEMA CHAIN HERE</h3>
+  <p class="headline">"The website logged fans into other people's accounts."</p>
+  <p class="source">CineStar, the Traitors finale ticket rush · nafilmu.cz, refresher.cz (paraphrased and translated)</p>
+  <p class="why step"><span class="arrow">→</span> I laughed. how can that happen to a company that size?</p>
+  <div class="act">bonus · war story</div>
+  <aside class="notes-src">Tell it straight. Click: "<b>I laughed.</b>" Then: "Six weeks later."</aside>
+</section>
+
+<section class="slide s-image">
+  <h2 class="visually-hidden">31 Dec 2025: the commits and the deploy that went live</h2>
+  <p class="cap top">WORKER MODE: <mark>ON</mark> · GOOD NIGHT</p>
+  <img src="assets/img/nye-deploy-1440.webp"
+       srcset="assets/img/nye-deploy-960.webp 960w, assets/img/nye-deploy-1440.webp 1440w, assets/img/nye-deploy-1920.webp 1920w"
+       sizes="100vw" alt="GitHub: commits on 31 Dec 2025 at 02:29, 02:34 and 03:04 CET, and Release #942 re-run at 03:31:47 CET for commit 0f19226, status Success" width="1920" height="608" decoding="async">
+  <p class="cap">what could <mark class="bad">possibly</mark> go wrong?</p>
+  <p class="source">github.com/MySpeedPuzzling/myspeedpuzzling.com · commits on 31 Dec 2025 · actions run 20610258850, attempt 2</p>
+  <div class="act">bonus · war story</div>
+  <aside class="notes-src">"New Year's Eve. <b>2:29 a.m.</b>: FrankenPHP worker mode fix. Then 2:34, then 3:04. Three deploys in a row <b>failed</b>. Did I stop? No. <b>I pressed Re-run.</b> 3:31, success, live at 3:35. And I went to sleep." Pause on the bottom line.
+  Facts: the deployed commit is 0f19226 (head of the night, includes d203a1a "FrankenPHP Worker mode fix"). Release runs for d203a1a, 742f0ca and 0f19226 failed at 02:36, 02:38 and 03:09; the re-run (attempt 2) of 0f19226 succeeded, 3m 30s. Timestamps shown in CET (GitHub renders relative times; converted for the screenshot).</aside>
+</section>
+
+<section class="slide s-image">
+  <h2 class="visually-hidden">The inbox on New Year's morning</h2>
+  <img src="assets/memes/inbox-1440.webp"
+       srcset="assets/memes/inbox-960.webp 960w, assets/memes/inbox-1440.webp 1440w, assets/memes/inbox-1920.webp 1920w"
+       sizes="100vw" alt="A mail inbox full of urgent bug reports on 1 January" width="1920" height="1080" decoding="async">
+  <p class="cap">1 JAN 2026 · 50 unread</p>
+  <div class="act">bonus · war story</div>
+  <aside class="notes-src">"New Year's morning. I wake up to <b>fifty emails</b>. URGENT. CRITICAL. BUG. I log in myself… <b>I'm someone else.</b> Refresh. <b>Someone else again.</b>" Mock inbox, fake senders.</aside>
+</section>
+
+<section class="slide s-image">
+  <h2 class="visually-hidden">One sign-on for everyone</h2>
+  <img src="assets/memes/one-signon-1440.webp"
+       srcset="assets/memes/one-signon-960.webp 960w, assets/memes/one-signon-1440.webp 1440w, assets/memes/one-signon-1920.webp 1920w"
+       sizes="100vw" alt="A crowd of people all wearing the same mask" width="1920" height="1097" decoding="async">
+  <p class="cap">perfect single sign-on. <mark>one sign-on. for everyone.</mark></p>
+  <div class="act">bonus · war story</div>
+  <aside class="notes-src">"Identity roulette. Every user on the site was <b>the last person who logged in</b>. New Year, new me — for everyone."</aside>
+</section>
+
+<section class="slide">
+  <h3>THE LESSON</h3>
+  <pre class="term warn">worker mode doesn't make your code stateful.
+<mark class="warn">it reveals it.</mark>
+
+→ <mark>reset</mark> at the START of every request
+→ 52 services implement ResetInterface
+→ stateless: true, everywhere
+→ the rule lives in CLAUDE.md</pre>
+  <div class="act">bonus · war story</div>
+  <aside class="notes-src">If asked how long the fix took: worker mode off by hand around 9 a.m., a first fix on 1 Jan, the real one on 3 Jan (3 days 14 h).
+  "A worker without reset is a hotel that doesn't clean the rooms. The next guest finds the toothbrush… <b>and the previous guest's user id.</b>"</aside>
+</section>
+
+<section class="slide s-statement">
+  <h1>WHO KEPT<br>THE USER<br>IN <mark>MEMORY</mark>?</h1>
+  <p class="after">a third-party bundle.</p>
+  <div class="act">bonus · war story</div>
+  <aside class="notes-src"><b>Short pause</b>, then straight into the decision I'd undo.</aside>
+</section>
+
+<section class="slide s-rule">
+  <h3>BONUS</h3>
+  <h1>THE DECISION<br>I'D UNDO</h1>
+  <div class="act">bonus · war story</div>
+  <aside class="notes-src">One. And it answers the question.</aside>
+</section>
+
+<section class="slide s-statement">
+  <h3>WHO KEPT THE USER IN MEMORY?</h3>
+  <h1>THE <mark class="bad">AUTH0</mark><br>BUNDLE.</h1>
+  <p class="after">I ran my own fork. and my bug report?</p>
+  <pre class="term sm step">auth0/symfony <mark>#227</mark>  "causes authentication leak in worker mode"
+opened     31 Dec 2025, 14:40   <span class="dim"># the same afternoon</span>
+comments   0
+releases   5.7 · 5.8 · 5.9 · 6.0-beta   <span class="dim"># none with the fix</span>
+status     OPEN · day 324</pre>
+  <div class="act">bonus · war story</div>
+  <aside class="notes-src">The callback lands. Click: read the receipt slowly, end on "day 324".
+  Checked 19 Nov 2026: upstream src/Service.php still caches the SDK without ResetInterface; the only activity on the issue is a "Scope: Bug" label (12 Mar 2026). "I outsourced auth so I'd never have to think about it. <b>Then I thought about it for three months.</b>"</aside>
+</section>
+
+<section class="slide s-image">
+  <h2 class="visually-hidden">The wet-ink signature</h2>
+  <img src="assets/memes/wet-ink-1440.webp"
+       srcset="assets/memes/wet-ink-960.webp 960w, assets/memes/wet-ink-1440.webp 1440w, assets/memes/wet-ink-1920.webp 1920w"
+       sizes="100vw" alt="A developer signing a parchment with a quill by candlelight" width="1920" height="1097" decoding="async">
+  <p class="cap">2026: getting <mark>my own</mark> users' password hashes back</p>
+  <div class="act">bonus · war story</div>
+  <aside class="notes-src">"A paid plan, a PGP key, and a <b>wet-ink executive signature</b>. In 2026. I had to find a pen."</aside>
 </section>
 
 </div><!-- /.deck -->
