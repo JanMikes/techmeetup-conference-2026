@@ -827,27 +827,27 @@ readonly final class CreateCheckoutSessionHandler
 
 <section class="slide">
   <h3>PAGINATION · WHERE DO PAGE AND LIMIT COME FROM?</h3>
-  <pre class="term sm"><span class="gr">GET</span> /api/v1/puzzles/{puzzleId}/leaderboard?<mark>page=2&amp;limit=20</mark></pre>
-  <p class="file">src/Api/V1/PuzzleLeaderboardResponseProvider.php · PR #477</p>
-  <pre class="term sm php">public function provide(Operation $operation, …): PuzzleLeaderboardResponse
+  <pre class="term sm"><span class="gr">GET</span> /api/v1/puzzles?<mark>page=2&amp;limit=20</mark></pre>
+  <p class="file">src/Api/V1/PuzzleSearchResponseProvider.php</p>
+  <pre class="term sm php">public function provide(Operation $operation, …): PuzzleListResponse
 {
     // declared as QueryParameter on the resource: validated, cast to int, defaults 1 / 20
-    $page  = $operation-&gt;<mark>getParameters()</mark>-&gt;get('page')-&gt;getValue();     // 2
+    $page  = $operation-&gt;getParameters()-&gt;get('page')-&gt;getValue();     // 2
     $limit = $operation-&gt;getParameters()-&gt;get('limit')-&gt;getValue();    // 20
 
-    $attempts = $this-&gt;getPuzzleSolvers-&gt;soloByPuzzleId($puzzleId);  // the website's query
-    $rows     = $this-&gt;puzzlesSorter-&gt;groupPlayers($attempts);        // ranked in PHP
-
-    $offset  = ($page - 1) * $limit;                                   // 20
-    $entries = <mark>array_slice($rows, $offset, $limit)</mark>;                    // rows 21–40
-    return new PuzzleLeaderboardResponse(entries: $entries, total: count($rows), /* page, limit */
-        hasMore: $offset + count($entries) &lt; count($rows));
+    $total     = $this-&gt;searchPuzzle-&gt;countByUserInput(/* the filters */);
+    $overviews = $this-&gt;searchPuzzle-&gt;byUserInput(
+        /* the filters, the sort */
+        <mark>offset: ($page - 1) * $limit</mark>,   // 20
+        <mark>limit: $limit</mark>,                  // 20
+    );
+    return new PuzzleListResponse(/* puzzles, total, page, limit, hasMore */);
 }</pre>
-  <pre class="term sm"><span class="dim">→</span> { "page": 2, "limit": 20, "total": 37, "has_more": false, "entries": [ …17 ] }</pre>
+  <p class="why"><span class="arrow">→</span> page + limit in, offset + limit to the query. SQL does the paging.</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src">Walk it top to bottom: "The client asks for page 2. <b>page and limit are declared on the resource</b>, like the filters on the previous slide, so they arrive already validated and cast: page=0 or limit=1000 is a 422 before this code runs."
-  "The leaderboard is the website's query, ranked and grouped in PHP, so the slice happens in PHP too. No Doctrine, so no Doctrine paginator: <b>honest, it's hand-made, and it's five lines.</b>"
-  Real code: provide() reads them through a small intValue() helper over $operation-&gt;getParameters(), shown inline here; the type (solo/duo/team), first-try and country filters are skipped (sortByFastest, filterGroupedByAttempt, filterOutPrivateProfiles, filterByCountry). Bigger lists would use SQL LIMIT/OFFSET or opaque cursors.</aside>
+  "Then it's plain PHP: turn page into an offset and hand both to the same query the website's puzzle search uses. <b>No paginator, no magic: two numbers into a query.</b>"
+  Real code from the puzzle search endpoint (GET /api/v1/puzzles), trimmed: provide() reads them through a small intValue() helper over $operation-&gt;getParameters(), shown inline here; skipped are the rate limit, the EAN lookup, the filters (query, manufacturer, pieces, difficulty), the membership 403s and the card building.</aside>
 </section>
 
 <section class="slide">

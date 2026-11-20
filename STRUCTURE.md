@@ -21,7 +21,7 @@ Format: the deck recipe (see `OUTLINE.md` → *Deck format*). These are slide id
 **Running threads (callbacks):**
 - **The million-dollar endpoint.**
   - The cold open shows Claude building it.
-  - Its real code is the example in Acts 1 and 2: DTO, filters, 422, pagination, OpenAPI.
+  - Its real code is the example in Acts 1 and 2: DTO, filters, 422, OpenAPI (pagination is shown on the puzzle search provider, which pages in SQL).
   - Act 3 explains why it was easy.
   - The close returns to "$0.00".
 - **"Who kept the user in memory?"**
