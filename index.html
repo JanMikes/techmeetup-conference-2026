@@ -1165,11 +1165,12 @@ CREATE INDEX custom_puzzle_ean_trgm
     ON puzzle USING GIN (ean gin_trgm_ops);</pre>
   <div class="deflist">
     <div><span class="k">src/</span><mark>0 lines</mark> changed</div>
-    <div class="step"><span class="k">"wasgij"</span>75 → 12 ms · production</div>
+    <div class="step"><span class="k">a brand name</span>75 → 12 ms · production</div>
     <div class="step"><span class="k">"cat"</span>79 → 8.5 ms · production</div>
   </div>
   <div class="act">act 3 · feels slow</div>
-  <aside class="notes-src">"Two lines of SQL. Shipped the same afternoon. <b>Not one line of PHP changed.</b>" The commit also adds docs/database-indexes.md: every custom index registered with the query it serves.</aside>
+  <aside class="notes-src">"Two lines of SQL. Shipped the same afternoon. <b>Not one line of PHP changed.</b>" The commit also adds docs/database-indexes.md: every custom index registered with the query it serves.
+  Numbers are from the commit message (measured on production). The brand searched was "wasgij" (a Jumbo puzzle series), labelled generically because the audience won't know it.</aside>
 </section>
 
 <section class="slide">

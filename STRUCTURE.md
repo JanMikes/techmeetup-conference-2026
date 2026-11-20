@@ -315,3 +315,4 @@ The user confirmed that the cold-open flow works: intro → today's endpoint (Cl
 - The classic-PHP meme is cut; its line moved to the notes of WORKER MODE.
 - "HOW LONG UNTIL IT WAS REALLY FIXED?" is cut. The timeline moved to THE LESSON's notes; the upstream issue (#227, day 324) is shown only in the close.
 - War story moved to a **bonus section after THANK YOU**, played only if time is left: BUT (now with a "BONUS · THE WAR STORY" kicker) → CineStar → NYE deploy → inbox → one sign-on → THE LESSON → WHO KEPT THE USER IN MEMORY? → THE DECISION I'D UNDO → Auth0 #227 → wet-ink. Act labels are now `bonus · war story`. Main flow: PHP-alive meme → ACT 3 directly; ACT 2 agenda loses "and how it bites"; ACT 3 notes no longer mention fifty emails; the close is now SPREAD THE WORD → THANK YOU. Main talk: 75 slides + 10 bonus.
+- THE FIX · ONE MIGRATION: "wasgij" is now labelled "a brand name" (same measured 75 → 12 ms); the real term is in the notes.
