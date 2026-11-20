@@ -284,7 +284,7 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
     <div class="step"><span class="k">LOGIC</span>hides in persist hooks and lifecycle events</div>
     <div class="step"><span class="k">ONE MODEL</span>reads and writes fight over one class</div>
   </div>
-  <p class="why step"><span class="arrow">→</span> tutorials optimise for <mark>minute 5</mark>. you live in year 5.</p>
+  <p class="why step with-prev"><span class="arrow">→</span> tutorials optimise for <mark>minute 5</mark>. you live in year 5.</p>
   <div class="act">act 1 · school</div>
   <aside class="notes-src">"One model" is the CQS hook: "<b>Reads and writes want different things.</b>" Next slide: the disclaimer, where you say what you'd do instead.</aside>
 </section>
@@ -398,11 +398,11 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
   </div>
   <p class="s2c-not">not <s>INSERT INTO puzzle_solving_time</s> · not <s>PATCH /puzzle_solving_times/{id}</s></p>
   <p class="why"><span class="arrow">→</span> name the code after the <mark>click</mark>, not after the table</p>
-  <p class="why step"><span class="arrow">→</span> one command, 3 callers: web form · public API (apps and AI agents) · CLI seeder</p>
+  <p class="why"><span class="arrow">→</span> one command, 3 callers: web form · public API (apps and AI agents) · CLI seeder</p>
   <div class="act">act 1 · easy part</div>
   <aside class="notes-src">Left to right: "This is the screen. The user wants one thing: <b>add my solving time</b>. So the code is called exactly that: the command AddPuzzleSolvingTime, handled by AddPuzzleSolvingTimeHandler. It does everything that one click means."
   Point at the struck-through line: "Nobody clicks INSERT INTO puzzle_solving_time. Nobody wants to PATCH a row."
-  Click: one command, three callers (PuzzleAddController, CreateSolvingTimeProcessor, SandboxSeedConsoleCommand; AI agents come in through the public API). That's why the API was cheap: the commands already existed for the web form. Next: why that matters more than it sounds (CRUD).
+  Bottom line: one command, three callers (PuzzleAddController, CreateSolvingTimeProcessor, SandboxSeedConsoleCommand; AI agents come in through the public API). That's why the API was cheap: the commands already existed for the web form. Next: why that matters more than it sounds (CRUD).
   Optional aside: "Puzzlers look at the picture on the box before touching a piece. I look at the screen before touching the database."</aside>
 </section>
 
@@ -416,8 +416,8 @@ DELETE /wish_list_items/{id}          <span class="dim"># solved it, so not on m
 <span class="step">POST   /notifications …               <span class="dim"># to my followers? private profile?</span>
 POST   /player_badges …               <span class="dim"># for me? my 3 teammates too?</span>
 PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time changed</span></span></pre>
-  <p class="why step"><span class="arrow">→</span> <mark>7 calls</mark>. 0 transactions. the rules live in the mobile app.</p>
-  <p class="why step"><span class="arrow">→</span> crash after call 2? your first try is gone. two phones? two first tries.</p>
+  <p class="why step with-prev"><span class="arrow">→</span> <mark>7 calls</mark>. 0 transactions. the rules live in the mobile app.</p>
+  <p class="why step with-prev"><span class="arrow">→</span> crash after call 2? your first try is gone. two phones? two first tries.</p>
   <div class="act">act 1 · easy part</div>
   <aside class="notes-src">"Anemic entity, overworked client: expose the entity and the rules have to live <b>somewhere</b>. Usually in the client."
   Read the first four calmly, they look reasonable. <b>Click:</b> the last three get a laugh.

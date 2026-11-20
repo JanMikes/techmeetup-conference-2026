@@ -219,7 +219,13 @@
     var s = slides[current];
     if (playing) { finishPlay(s); return; }
     var hidden = stepsOf(s).filter(function (el) { return !el.classList.contains('on'); });
-    if (hidden.length) { hidden[0].classList.add('on'); return; }
+    if (hidden.length) {
+      /* .with-prev steps appear on the same click as the step before them */
+      var i = 0;
+      do { hidden[i].classList.add('on'); i++; }
+      while (i < hidden.length && hidden[i].classList.contains('with-prev'));
+      return;
+    }
     if (current < total - 1) show(current + 1);
   }
   function prev() {
@@ -227,7 +233,12 @@
     if (playing) { stopPlay(); }
     if (!s.hasAttribute('data-autoplay')) {
       var shown = stepsOf(s).filter(function (el) { return el.classList.contains('on'); });
-      if (shown.length) { shown[shown.length - 1].classList.remove('on'); return; }
+      if (shown.length) {
+        var j = shown.length - 1;
+        while (j > 0 && shown[j].classList.contains('with-prev')) { shown[j].classList.remove('on'); j--; }
+        shown[j].classList.remove('on');
+        return;
+      }
     }
     if (current > 0) show(current - 1, true, true);
   }

@@ -27,7 +27,7 @@ It is published as a static website. Everything shown comes from MySpeedPuzzling
 - Plain HTML/CSS/JS, no build, no CDN. Slides live in `index.html` as `<section class="slide">`.
   - `.act` sets the jump-index label.
   - `.notes-src` holds the speaker notes.
-  - `.step` marks click reveals.
+  - `.step` marks click reveals; `.step.with-prev` appears on the same click as the step before it.
 - Colour tokens are defined only in `:root` and `body.light` in `style.css`.
 - Every new layout needs a mobile override `@media (pointer: coarse), (max-width: 860px)`. Check it at 390 px.
 - Use at most 3 `<mark>` per slide.
