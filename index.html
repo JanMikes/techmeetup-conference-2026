@@ -573,16 +573,16 @@ final class MyCollectionsResponse
         public array $collections, <span class="c">// CollectionResponse[]</span>
     ) {}
 }</pre>
-  <p class="why"><span class="arrow">→</span> URL, who may call it, the JSON shape. <mark>no entity</mark>, no groups.</p>
   <div class="act">act 1 · end to end</div>
-  <aside class="notes-src">"Let's walk one read and one write all the way through: <b>my collections</b>. The resource says three things: the URL, who may call it, and the JSON shape. That's all it does."
+  <aside class="notes-src">Say: "URL, who may call it, the JSON shape. No entity, no groups."
+  "Let's walk one read and one write all the way through: <b>my collections</b>. The resource says three things: the URL, who may call it, and the JSON shape. That's all it does."
   Trimmed: the openapi tag and the docblock types; $collections is assigned in the constructor body in the real file.</aside>
 </section>
 
 <section class="slide">
   <h3>END TO END · READ ② THE PROVIDER</h3>
   <p class="file">src/Api/V1/MyCollectionsResponseProvider.php</p>
-  <pre class="term sm tight php"><span class="c">/** @implements <mark>ProviderInterface</mark>&lt;MyCollectionsResponse&gt; */</span>
+  <pre class="term sm php"><span class="c">/** @implements <mark>ProviderInterface</mark>&lt;MyCollectionsResponse&gt; */</span>
 final readonly class MyCollectionsResponseProvider implements ProviderInterface
 {
     public function __construct(
@@ -597,43 +597,45 @@ final readonly class MyCollectionsResponseProvider implements ProviderInterface
         $playerId = $user-&gt;getPlayer()-&gt;id-&gt;toString();
 
         $collections = $this-&gt;<mark>getPlayerCollections</mark>-&gt;byPlayerId($playerId, includePrivate: true);
+
         $responses = array_map(fn ($c) =&gt; new CollectionResponse(…), $collections);
+
         return new MyCollectionsResponse($playerId, count($responses), $responses);
     }
 }</pre>
-  <p class="why"><span class="arrow">→</span> the provider is <mark>glue</mark>: who's asking → ask the read side → map to the response.</p>
   <div class="act">act 1 · end to end</div>
-  <aside class="notes-src">"One interface, one method. API Platform calls provide() for the GET and serializes whatever object I return. No Request, no Response."
+  <aside class="notes-src">Say: "The provider is glue: who's asking, ask the read side, map to the response."
+  "One interface, one method. API Platform calls provide() for the GET and serializes whatever object I return. No Request, no Response."
   Trimmed: the unused $uriVariables/$context parameters, the GetCollectionItems dependency and the virtual "Default Collection" prepended when the player has items outside any collection, and the CollectionResponse constructor arguments (collectionId, name, description, visibility).</aside>
 </section>
 
 <section class="slide">
   <h3>END TO END · READ ③ THE QUERY</h3>
   <p class="file">src/Query/GetPlayerCollections.php</p>
-  <pre class="term sm tight php">readonly final class GetPlayerCollections
+  <pre class="term sm php">readonly final class GetPlayerCollections
 {
     public function __construct(private Connection $database) {}
-    <span class="c">/** @return array&lt;CollectionOverview&gt; */</span>
+
     public function byPlayerId(string $playerId, bool $includePrivate = true): array
     {
         $visibilityCondition = $includePrivate ? '' : "AND visibility = 'public'";
+
         $query = &lt;&lt;&lt;SQL
-SELECT id, name, description, visibility, created_at, player_id
-FROM collection
-WHERE player_id = :playerId {$visibilityCondition}
-ORDER BY created_at DESC
-SQL;
-        $data = $this-&gt;database-&gt;executeQuery($query, ['playerId' =&gt; $playerId])-&gt;fetchAllAssociative();
-        return array_map(static fn (array $row) =&gt; new <mark>CollectionOverview</mark>(
-            playerId: $row['player_id'], collectionId: $row['id'], name: $row['name'],
-            description: $row['description'], visibility: CollectionVisibility::from($row['visibility']),
-        ), $data);
+            <span class="syn kw">SELECT</span> id, name, description, visibility, created_at, player_id
+            <span class="syn kw">FROM</span> collection
+            <span class="syn kw">WHERE</span> player_id = :playerId {$visibilityCondition}
+            <span class="syn kw">ORDER BY</span> created_at <span class="syn kw">DESC</span>
+            SQL;
+
+        $rows = $this-&gt;database-&gt;executeQuery($query, ['playerId' =&gt; $playerId])-&gt;fetchAllAssociative();
+
+        return array_map(fn (array $row) =&gt; new <mark>CollectionOverview</mark>(…), $rows);
     }
 }</pre>
-  <p class="why"><span class="arrow">→</span> plain SQL into a read DTO. no entity. the website uses the <mark>same query</mark>.</p>
   <div class="act">act 1 · end to end</div>
-  <aside class="notes-src">"The query already existed for the collections page. <b>The API just got a new door to it.</b>" GetPlayerCollections is also used by PuzzleLibraryController, PuzzleAddController, PuzzlePickerController and others.
-  Reformatted to fit: the constructor and executeQuery are on one line each, the closure is an arrow function, and the @var row-shape docblock is trimmed. The SQL is verbatim.</aside>
+  <aside class="notes-src">Say: "Plain SQL into a read DTO. No entity. The website uses the same query."
+  "The query already existed for the collections page. <b>The API just got a new door to it.</b>" GetPlayerCollections is also used by PuzzleLibraryController, PuzzleAddController, PuzzlePickerController and others.
+  Reformatted for the slide: the constructor and executeQuery are on one line each, the heredoc is indented, $data is renamed $rows, the closure is an arrow function, the @return/@var docblocks are trimmed, and the CollectionOverview arguments (playerId, collectionId, name, description, visibility) are elided. The SQL is verbatim.</aside>
 </section>
 
 <section class="slide">
