@@ -307,3 +307,4 @@ The user confirmed that the cold-open flow works: intro → today's endpoint (Cl
 - New slide after THE LAYERS: "SYNTAX SUGAR · THE GOOD KIND / THE MAGIC WE WANT": what API Platform does (magic) vs what I write (explicit), with "best of both worlds". It also answers "why not a controller".
 - THE LAYERS rows are now API READ · API WRITE · WEB READ (page → Controller → same Query/SQL) · WEB WRITE (form → Controller → same Command/Entity).
 - END TO END · READ is now three slides: ① the resource, ② the provider (the whole class with @implements), ③ the query (the whole GetPlayerCollections class, SQL verbatim).
+- Code pass: every code block shows its class/operation context, the key operation is marked, and details are /* comments */. The "WHERE DOES $userId COME FROM?" slide is cut, and team B no longer shows UserAware/WithUserId. The MSP way stays: the processor passes the player id explicitly.

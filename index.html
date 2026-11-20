@@ -555,22 +555,20 @@ PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time cha
 <section class="slide">
   <h3>END TO END · READ ① THE RESOURCE</h3>
   <p class="file">src/Api/V1/MyCollectionsResponse.php</p>
-  <pre class="term sm php"><span class="k">#[ApiResource(</span>
-    shortName: 'MyCollections',
-    operations: [
-        new <mark>Get</mark>(
-            uriTemplate: '/v1/me/collections',
-            security: "is_granted('ROLE_PAT') or is_granted('ROLE_OAUTH2_COLLECTIONS:READ')",
-            provider: <mark>MyCollectionsResponseProvider</mark>::class,
-        ),
-    ],
-<span class="k">)]</span>
+  <pre class="term sm php">#[ApiResource(operations: [
+    new <mark>Get</mark>(
+        uriTemplate: '/v1/me/collections',
+        security: "is_granted('ROLE_OAUTH2_COLLECTIONS:READ') or …",
+        provider: <mark>MyCollectionsResponseProvider</mark>::class,
+    ),
+])]
 final class MyCollectionsResponse
 {
     public function __construct(
         public string $playerId,
         public int $count,
-        public array $collections, <span class="c">// CollectionResponse[]</span>
+        /** @var list&lt;CollectionResponse&gt; */
+        public array $collections,
     ) {}
 }</pre>
   <div class="act">act 1 · end to end</div>
@@ -582,23 +580,21 @@ final class MyCollectionsResponse
 <section class="slide">
   <h3>END TO END · READ ② THE PROVIDER</h3>
   <p class="file">src/Api/V1/MyCollectionsResponseProvider.php</p>
-  <pre class="term sm php"><span class="c">/** @implements <mark>ProviderInterface</mark>&lt;MyCollectionsResponse&gt; */</span>
+  <pre class="term sm php">/** @implements <mark>ProviderInterface</mark>&lt;MyCollectionsResponse&gt; */
 final readonly class MyCollectionsResponseProvider implements ProviderInterface
 {
-    public function __construct(
-        private Security $security,
-        private GetPlayerCollections $getPlayerCollections,
-    ) {}
+    public function __construct(private GetPlayerCollections $getPlayerCollections) {}
 
     public function provide(Operation $operation, …): MyCollectionsResponse
     {
-        $user = $this-&gt;security-&gt;getUser();
-        assert($user instanceof ApiUser);
-        $playerId = $user-&gt;getPlayer()-&gt;id-&gt;toString();
+        $playerId = /* the logged-in player, from Security */;
 
-        $collections = $this-&gt;<mark>getPlayerCollections</mark>-&gt;byPlayerId($playerId, includePrivate: true);
+        $collections = $this-&gt;<mark>getPlayerCollections</mark>-&gt;byPlayerId($playerId);
 
-        $responses = array_map(fn ($c) =&gt; new CollectionResponse(…), $collections);
+        $responses = array_map(
+            fn (CollectionOverview $c) =&gt; new CollectionResponse(/* id, name, … */),
+            $collections,
+        );
 
         return new MyCollectionsResponse($playerId, count($responses), $responses);
     }
@@ -616,20 +612,20 @@ final readonly class MyCollectionsResponseProvider implements ProviderInterface
 {
     public function __construct(private Connection $database) {}
 
-    public function byPlayerId(string $playerId, bool $includePrivate = true): array
+    /** @return list&lt;CollectionOverview&gt; */
+    public function byPlayerId(string $playerId): array
     {
-        $visibilityCondition = $includePrivate ? '' : "AND visibility = 'public'";
-
         $query = &lt;&lt;&lt;SQL
-            <span class="syn kw">SELECT</span> id, name, description, visibility, created_at, player_id
+            <span class="syn kw">SELECT</span> id, name, description, visibility
             <span class="syn kw">FROM</span> collection
-            <span class="syn kw">WHERE</span> player_id = :playerId {$visibilityCondition}
+            <span class="syn kw">WHERE</span> player_id = :playerId
             <span class="syn kw">ORDER BY</span> created_at <span class="syn kw">DESC</span>
             SQL;
 
-        $rows = $this-&gt;database-&gt;executeQuery($query, ['playerId' =&gt; $playerId])-&gt;fetchAllAssociative();
+        $rows = $this-&gt;database-&gt;executeQuery($query, ['playerId' =&gt; $playerId])
+            -&gt;fetchAllAssociative();
 
-        return array_map(fn (array $row) =&gt; new <mark>CollectionOverview</mark>(…), $rows);
+        return array_map(fn (array $row) =&gt; new <mark>CollectionOverview</mark>(/* row → typed */), $rows);
     }
 }</pre>
   <div class="act">act 1 · end to end</div>
@@ -641,20 +637,21 @@ final readonly class MyCollectionsResponseProvider implements ProviderInterface
 <section class="slide">
   <h3>END TO END · WRITE ① THE INPUT</h3>
   <p class="file">src/Api/V1/CreateCollectionInput.php</p>
-  <pre class="term sm php"><span class="k">#[ApiResource(operations: [</span>
+  <pre class="term sm php">#[ApiResource(operations: [
     new <mark>Post</mark>(
         uriTemplate: '/v1/me/collections',
-        security: "is_granted('ROLE_PAT') or is_granted('ROLE_OAUTH2_COLLECTIONS:WRITE')",
+        security: "is_granted('ROLE_OAUTH2_COLLECTIONS:WRITE') or …",
         output: CollectionResponse::class,
         processor: <mark>CreateCollectionProcessor</mark>::class,
     ),
-<span class="k">])]</span>
+])]
 final class CreateCollectionInput
 {
-    <span class="k">#[Assert\NotBlank] #[Assert\Length(max: 100)]</span>
+    #[Assert\NotBlank]
+    #[Assert\Length(max: 100)]
     public string $name = '';
 
-    <span class="k">#[Assert\Length(max: 500)]</span>
+    #[Assert\Length(max: 500)]
     public ?string $description = null;
 }</pre>
   <p class="why"><span class="arrow">→</span> body validation on the input. invalid? a 422 before any of my code runs.</p>
@@ -665,42 +662,50 @@ final class CreateCollectionInput
 <section class="slide">
   <h3>END TO END · WRITE ② THE PROCESSOR</h3>
   <p class="file">src/Api/V1/CreateCollectionProcessor.php</p>
-  <pre class="term sm php">$playerId = $user-&gt;getPlayer()-&gt;id-&gt;toString();
+  <pre class="term sm php">/** @implements <mark>ProcessorInterface</mark>&lt;CreateCollectionInput, CollectionResponse&gt; */
+final readonly class CreateCollectionProcessor implements ProcessorInterface
+{
+    public function process(mixed $data, Operation $operation, …): CollectionResponse
+    {
+        $playerId = /* the logged-in player, from Security */;
 
-if ($profile-&gt;activeMembership === false) {
-    throw new AccessDeniedHttpException('Active membership is required…');
-}
+        if (/* no active membership */) {
+            throw new AccessDeniedHttpException('Active membership is required');
+        }
 
-$collectionId = <mark>Uuid::uuid7()</mark>-&gt;toString();
+        $collectionId = <mark>Uuid::uuid7()</mark>-&gt;toString();
 
-$this-&gt;messageBus-&gt;dispatch(new CreateCollection(
-    collectionId: $collectionId,
-    playerId: $playerId,
-    name: $data-&gt;name, …
-));
+        $this-&gt;messageBus-&gt;<mark>dispatch</mark>(new CreateCollection(
+            $collectionId, $playerId, $data-&gt;name, /* description, visibility */
+        ));
 
-return new CollectionResponse(collectionId: $collectionId, …);</pre>
-  <p class="why"><span class="arrow">→</span> the processor is an adapter. the command has no idea HTTP exists.</p>
+        return new CollectionResponse($collectionId, /* + the input fields */);
+    }
+}</pre>
   <div class="act">act 1 · end to end</div>
-  <aside class="notes-src">"Who are you, are you allowed, here's your new id, go. The ID is generated <b>before</b> dispatch: sync or async, I already know the URL."
+  <aside class="notes-src">Say: "The processor is an adapter. The command has no idea HTTP exists."
+  "Who are you, are you allowed, here's your new id, go. The ID is generated <b>before</b> dispatch: sync or async, I already know the URL."
   This is <b>Team A</b> (the clean way); team B comes after the handler.</aside>
 </section>
 
 <section class="slide">
   <h3>END TO END · WRITE ③ COMMAND → HANDLER</h3>
   <p class="file">src/MessageHandler/CreateCollectionHandler.php</p>
-  <pre class="term sm php">public function __invoke(CreateCollection $message): <mark>void</mark>
+  <pre class="term sm php">#[AsMessageHandler]
+readonly final class CreateCollectionHandler
 {
-    $player = $this-&gt;playerRepository-&gt;get($message-&gt;playerId);
+    public function __invoke(CreateCollection $message): <mark>void</mark>
+    {
+        $player = $this-&gt;playerRepository-&gt;get($message-&gt;playerId);
 
-    if ($this-&gt;collectionRepository-&gt;findByNameAndPlayer(…) !== null) {
-        throw new <mark>CollectionAlreadyExists</mark>(…);
+        if ($this-&gt;collectionRepository-&gt;findByNameAndPlayer(/* name, player */) !== null) {
+            throw new CollectionAlreadyExists(/* the existing id */);
+        }
+
+        $this-&gt;collectionRepository-&gt;save(new Collection(
+            Uuid::fromString($message-&gt;collectionId), $player, $message-&gt;name, /* … */
+        ));
     }
-
-    $this-&gt;collectionRepository-&gt;save(new Collection(
-        id: Uuid::fromString($message-&gt;collectionId),
-        player: $player, name: $message-&gt;name, …
-    ));
 }</pre>
   <p class="why"><span class="arrow">→</span> the same handler serves the website form, the API and the CLI</p>
   <p class="why step"><span class="arrow">→</span> that was <mark>team A</mark>: the clean way. five classes for one write.</p>
@@ -716,46 +721,17 @@ return new CollectionResponse(collectionId: $collectionId, …);</pre>
     output: CheckoutSessionResponse::class,
     <mark>messenger: 'input'</mark>,
 <span class="k">)]</span>
-readonly final class CreateCheckoutSession implements UserAware
+readonly final class CreateCheckoutSession
 {
-    use WithUserId;
-
     public function __construct(
         <span class="k">#[Assert\Choice(['monthly', 'yearly'])]</span>
         public string $plan,
-        private ?Uuid $userId = null,
     ) {}
 }</pre>
   <p class="why"><span class="arrow">→</span> no processor. no mapping. the message <mark>is</mark> the resource.</p>
   <p class="why step"><span class="arrow">→</span> the handler's return value becomes the response (API Platform reads the HandledStamp)</p>
   <div class="act">act 1 · together</div>
-  <aside class="notes-src">"<b>Team B.</b> Another project of mine, open source too. The command carries the API attributes, API Platform dispatches it straight to the bus."</aside>
-</section>
-
-<section class="slide">
-  <h3>WHERE DOES $userId COME FROM?</h3>
-  <div class="cols">
-    <div>
-      <span class="label">A · EXPLICIT</span>
-      <pre class="term php">$user = $this-&gt;security-&gt;getUser();
-assert($user instanceof ApiUser);
-new CreateCollection(
-    playerId: $user-&gt;getPlayer()…
-);</pre>
-    </div>
-    <div>
-      <span class="label">B · MIDDLEWARE</span>
-      <pre class="term php">if ($message instanceof UserAware
-    &amp;&amp; !$envelope-&gt;last(ReceivedStamp::class)) {
-  $message = $message-&gt;withUserId(
-    $this-&gt;security-&gt;getUser()…
-  );
-}</pre>
-    </div>
-  </div>
-  <p class="why"><span class="arrow">→</span> explicit beats magic… until you do it by hand in <mark>426 files</mark></p>
-  <div class="act">act 1 · together</div>
-  <aside class="notes-src">A's risk: pass the wrong id (we did: <b>the phantom player</b>). B's risk: a half-built message; the CLI passes userId through the constructor; async workers need the ReceivedStamp guard.</aside>
+  <aside class="notes-src">"<b>Team B.</b> Another project of mine, open source too. The command carries the API attributes, API Platform dispatches it straight to the bus." (Trimmed: in Fantasy Academy a middleware fills in the user id. We skip that discussion: in MySpeedPuzzling the processor passes the player id explicitly, as on the previous slides.)</aside>
 </section>
 
 <section class="slide s-statement">
@@ -770,7 +746,7 @@ new CreateCollection(
   <h3>MY RULE · OPINION</h3>
   <h2>OWN EVERY CLIENT?<br>THE MESSAGE CAN BE<br>THE CONTRACT.</h2>
   <p class="why"><span class="arrow">→</span> strangers integrate with you? put a <mark>layer</mark> between.</p>
-  <p class="rule-sub">Fantasy Academy: one frontend, same repo → B. MySpeedPuzzling: public API, 4 callers → A.</p>
+  <p class="rule-sub">Fantasy Academy: one frontend, same repo → B. MySpeedPuzzling: public API, 3 callers → A.</p>
   <div class="act">act 1 · together</div>
   <aside class="notes-src">"<b>Both are mine. I chose differently, on purpose.</b>"</aside>
 </section>
@@ -788,19 +764,19 @@ new CreateCollection(
 <section class="slide">
   <h3>FILTERING + VALIDATION <mark>FOR FREE</mark></h3>
   <p class="file">src/Api/V1/PuzzleLeaderboardResponse.php · PR #477</p>
-  <pre class="term sm php">'type' =&gt; new QueryParameter(
-    key: 'type',
-    constraints: [new <mark>Choice</mark>(choices: ['solo', 'duo', 'team'])],
-),
-'country' =&gt; new QueryParameter(
-    key: 'country',
-    castFn: [QueryParameterCaster::class, 'lowercase'],
-),
-'limit' =&gt; new QueryParameter(
-    key: 'limit',
-    schema: ['type' =&gt; 'integer', 'maximum' =&gt; 100, 'default' =&gt; 20],
-    constraints: [new <mark>Range</mark>(min: 1, max: 100)],
-),</pre>
+  <pre class="term sm php">new Get(
+    uriTemplate: '/v1/puzzles/{puzzleId}/leaderboard',
+    <mark>parameters</mark>: [
+        'type' =&gt; new QueryParameter(
+            constraints: [new Choice(['solo', 'duo', 'team'])],
+        ),
+        'country' =&gt; new QueryParameter(castFn: /* lowercase */),
+        'limit' =&gt; new QueryParameter(
+            schema: ['type' =&gt; 'integer', 'maximum' =&gt; 100, 'default' =&gt; 20],
+            constraints: [new <mark>Range</mark>(min: 1, max: 100)],
+        ),
+    ],
+)</pre>
   <p class="why"><span class="arrow">→</span> declared, not coded. and it lands in the OpenAPI docs.</p>
   <p class="why step"><span class="arrow">→</span> <span class="k">?limit=1000</span> → <mark>422</mark> problem+json: "limit: This value should be between 1 and 100."</p>
   <div class="act">act 2 · production</div>
@@ -811,11 +787,12 @@ new CreateCollection(
 <section class="slide">
   <h3>PAGINATION</h3>
   <p class="file">src/Api/V1/PuzzleLeaderboardResponseProvider.php · PR #477</p>
-  <pre class="term php">$total  = count($rows);
-$offset = ($page - 1) * $limit;
+  <pre class="term php">// PuzzleLeaderboardResponseProvider::provide()
+$offset  = ($page - 1) * $limit;
 $entries = array_slice($rows, $offset, $limit);
 
-<span class="c">// → { "page": 1, "limit": 20, "total": 37, "has_more": true }</span></pre>
+return new PuzzleLeaderboardResponse(/* … */, total: count($rows), hasMore: /* … */);
+// → { "page": 1, "limit": 20, "total": 37, "has_more": true }</pre>
   <p class="why"><span class="arrow">→</span> honest: hand-made. no Doctrine, so no Doctrine paginator.</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src">Bigger lists use opaque cursors. The price of no Doctrine: you write this yourself. It's five lines.</aside>
@@ -824,18 +801,21 @@ $entries = array_slice($rows, $offset, $limit);
 <section class="slide">
   <h3>BODY VALIDATION · WHEN ATTRIBUTES AREN'T ENOUGH</h3>
   <p class="file">src/Api/V1/CreateSolvingTimeInput.php</p>
-  <pre class="term sm php"><span class="k">#[Assert\Regex('/^\d{1,2}:\d{2}(:\d{2})?$/', message: 'Time must be in format HH:MM:SS or MM:SS')]</span>
-public string $time = '';
-
-<span class="k">#[Assert\Positive]</span>
-public ?int $piecesPlaced = null;      <span class="c">// an unfinished competition result</span>
-
-<span class="k">#[<mark>Assert\Callback</mark>]</span>
-public function validateTime(ExecutionContextInterface $context): void
+  <pre class="term sm php">final class CreateSolvingTimeInput
 {
-    if ($this-&gt;piecesPlaced === null &amp;&amp; trim($this-&gt;time) === '') {
-        $context-&gt;buildViolation('This value should not be blank.')
-            -&gt;atPath('time')-&gt;addViolation();
+    #[Assert\Regex('/^\d{1,2}:\d{2}(:\d{2})?$/', message: 'HH:MM:SS or MM:SS')]
+    public string $time = '';
+
+    #[Assert\Positive]
+    public ?int $piecesPlaced = null;   // an unfinished competition result
+
+    #[Assert\<mark>Callback</mark>]
+    public function validateTime(ExecutionContextInterface $context): void
+    {
+        if ($this-&gt;piecesPlaced === null &amp;&amp; trim($this-&gt;time) === '') {
+            $context-&gt;buildViolation('This value should not be blank.')
+                -&gt;atPath('time')-&gt;addViolation();
+        }
     }
 }</pre>
   <p class="why"><span class="arrow">→</span> rules across fields live on the input too. same 422, same <i>violations</i> format.</p>
@@ -856,16 +836,22 @@ public function validateTime(ExecutionContextInterface $context): void
 <section class="slide">
   <h3>THROWN IN THE DOMAIN</h3>
   <p class="file">src/MessageHandler/AddPuzzleSolvingTimeHandler.php</p>
-  <pre class="term php">if ($message-&gt;firstAttempt) {
-    $firstTry = $this-&gt;firstTryAssessor-&gt;assess(…);
+  <pre class="term sm php">#[AsMessageHandler]
+readonly final class AddPuzzleSolvingTimeHandler
+{
+    public function __invoke(AddPuzzleSolvingTime $message): void
+    {
+        if ($message-&gt;firstAttempt) {
+            $firstTry = $this-&gt;firstTryAssessor-&gt;assess(/* player, puzzle */);
 
-    if ($firstTry-&gt;blocks($message-&gt;firstTryResolution)) {
-        throw new <mark>FirstTryAlreadyTaken</mark>($firstTry);
+            if ($firstTry-&gt;blocks($message-&gt;firstTryResolution)) {
+                throw new <mark>FirstTryAlreadyTaken</mark>($firstTry);
+            }
+        }
+
+        /* … save the time, raise PuzzleSolved */
     }
-}
-
-<span class="c">// src/Exceptions/FirstTryAlreadyTaken.php</span>
-final class FirstTryAlreadyTaken extends <mark>\Exception</mark></pre>
+}</pre>
   <p class="why"><span class="arrow">→</span> no HTTP. no status code. just the business saying no.</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src">"The handler has no idea whether a browser, the API, the CLI or an AI agent called it. <b>It just refuses.</b>"
@@ -875,18 +861,19 @@ final class FirstTryAlreadyTaken extends <mark>\Exception</mark></pre>
 <section class="slide">
   <h3>TRANSLATED AT THE EDGE</h3>
   <p class="file">src/Api/V1/CreateSolvingTimeProcessor.php</p>
-  <pre class="term sm php">try {
-    $this-&gt;messageBus-&gt;dispatch(new AddPuzzleSolvingTime(…));
+  <pre class="term sm php">// API door · CreateSolvingTimeProcessor::process()
+try {
+    $this-&gt;messageBus-&gt;dispatch(new AddPuzzleSolvingTime(/* … */));
 } catch (HandlerFailedException $exception) {
-    if ($exception-&gt;getPrevious() instanceof FirstTryAlreadyTaken) {
-        throw FirstTryConflictResponse::from(…);   <span class="c">// → 422 + a helpful detail</span>
+    if ($exception-&gt;getPrevious() instanceof <mark>FirstTryAlreadyTaken</mark>) {
+        throw FirstTryConflictResponse::from(/* … */);   // → <mark>422</mark> + a helpful detail
     }
-    …
+    /* other domain errors… */
 }
 
-<span class="c">// src/Controller/PuzzleAddController.php: the SAME exception</span>
+// web door · PuzzleAddController: the SAME exception
 if ($realException instanceof FirstTryAlreadyTaken) {
-    $form-&gt;addError(new FormError(…));            <span class="c">// → a red form error</span>
+    $form-&gt;addError(new FormError(/* translated message */));   // → a red form error
 }</pre>
   <p class="why"><span class="arrow">→</span> one domain exception. <mark>two translations</mark>. each door speaks its own language.</p>
   <div class="act">act 2 · production</div>
@@ -896,16 +883,17 @@ if ($realException instanceof FirstTryAlreadyTaken) {
 <section class="slide">
   <h3>OPENAPI · DOCS THAT CAN'T LIE</h3>
   <p class="file">src/Api/V1/CreateSolvingTimeInput.php</p>
-  <pre class="term sm php">openapi: new OpenApiOperation(
-    description: 'Linking the time to an event (all optional): round_id …',
-    parameters: [new Parameter(name: '<mark>Idempotency-Key</mark>', in: 'header', …)],
-    responses: [
-        '422' =&gt; new OpenApiResponse(description: 'Invalid input, a first attempt
-                  already recorded, or an Idempotency-Key already used…'),
-        '404' =&gt; new OpenApiResponse(description: 'round_id, competition_id or
-                  series_id is unknown… nothing is saved.'),
-    ],
-),</pre>
+  <pre class="term sm php">new Post(
+    uriTemplate: '/v1/me/solving-times',
+    openapi: new OpenApiOperation(
+        description: 'Linking the time to an event (all optional): round_id …',
+        parameters: [new Parameter(name: '<mark>Idempotency-Key</mark>', in: 'header')],
+        responses: [
+            '422' =&gt; new OpenApiResponse(description: 'a first attempt already recorded, …'),
+            '404' =&gt; new OpenApiResponse(description: 'round_id unknown, nothing is saved'),
+        ],
+    ),
+)</pre>
   <p class="why"><span class="arrow">→</span> schemas come from the DTOs. the edge cases live <mark>next to the code that throws them</mark>.</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src">"Types, required fields, constraints: generated. What you write by hand is the part only you know: the edge cases."
@@ -925,16 +913,17 @@ AI agents        <span class="dim">internal API, ~90 scenario endpoints  </span>
 <section class="slide">
   <h3>SECURITY ① WHO ARE YOU?</h3>
   <p class="file">config/packages/security.php</p>
-  <pre class="term sm php">'api' =&gt; [
-    'pattern'   =&gt; '^/api/v1/',
-    'stateless' =&gt; true,                           <span class="c">// no session, no cookie</span>
-    'oauth2'    =&gt; true,                           <span class="c">// league/oauth2-server-bundle</span>
-    'custom_authenticators' =&gt; [<mark>PatAuthenticator</mark>::class],
+  <pre class="term sm php">'firewalls' =&gt; [
+    'api' =&gt; [
+        'pattern'   =&gt; '^/api/v1/',
+        'stateless' =&gt; true,                    // no session, no cookie
+        '<mark>oauth2</mark>'    =&gt; true,                    // league/oauth2-server-bundle
+        'custom_authenticators' =&gt; [PatAuthenticator::class],
+    ],
 ],
-
 'access_control' =&gt; [
-    ['path' =&gt; '^/api/v1/me', 'roles' =&gt; [PatUser::ROLE, OAuth2User::ROLE]],
-    ['path' =&gt; '^/api/v1/players/.*/results', 'roles' =&gt; [OAuth2Scope::ResultsRead-&gt;role()]],
+    ['path' =&gt; '^/api/v1/me', 'roles' =&gt; [PatUser::ROLE, OAuth2User::ROLE</mark>,
+    ['path' =&gt; '^/api/v1/players/.*/results', 'roles' =&gt; <mark>[OAuth2Scope::ResultsRead</mark>-&gt;role()</mark>,
 ],</pre>
   <p class="why"><span class="arrow">→</span> scopes become roles. a whole path is closed even if an endpoint forgets.</p>
   <div class="act">act 2 · production</div>
@@ -943,17 +932,17 @@ AI agents        <span class="dim">internal API, ~90 scenario endpoints  </span>
 
 <section class="slide">
   <h3>SECURITY ② WHAT MAY YOU DO?</h3>
-  <pre class="term sm php"><span class="c">// 1. the operation: is this token allowed here at all?</span>
-security: "is_granted('ROLE_PAT') or is_granted('<mark>ROLE_OAUTH2_COLLECTIONS:WRITE</mark>')",
+  <pre class="term sm php">// 1. the operation (#[ApiResource]): is this token allowed here at all?
+security: "is_granted('ROLE_OAUTH2_COLLECTIONS:WRITE') or …",
 
-<span class="c">// 2. the processor: the business rule → 403</span>
-if ($profile-&gt;activeMembership === false) {
-    throw new AccessDeniedHttpException('Active membership is required…');
+// 2. the processor: the business rule → <mark>403</mark>
+if (/* no active membership */) {
+    throw new AccessDeniedHttpException('Active membership is required');
 }
 
-<span class="c">// 3. the provider: be nice to the database → 429</span>
+// 3. the provider: be nice to the database → <mark>429</mark>
 if (!$this-&gt;apiPuzzleSearchLimiter-&gt;create($key)-&gt;consume()-&gt;isAccepted()) {
-    throw new <mark>TooManyRequestsHttpException</mark>($retryAfterSeconds, …);
+    throw new TooManyRequestsHttpException($retryAfterSeconds);
 }</pre>
   <p class="why"><span class="arrow">→</span> token scope, business permission, rate limit. three questions, three places.</p>
   <div class="act">act 2 · production</div>
@@ -1219,10 +1208,16 @@ CREATE INDEX custom_puzzle_ean_trgm
 <section class="slide">
   <h3>AND THE TEST DIDN'T MOVE</h3>
   <p class="file">tests/Controller/Api/V1/PuzzleSearchEndpointTest.php · untouched by the fix</p>
-  <pre class="term sm php">$browser-&gt;request('GET', '/api/v1/puzzles', ['query' =&gt; 'RB-500-001']);
+  <pre class="term sm php">public function testQueryMatchesIdentificationNumberAndIsAccentInsensitive(): void
+{
+    $browser = $this-&gt;createApiClient();
+    /* … authenticate with a personal access token */
 
-$this-&gt;assertResponseIsSuccessful();
-$this-&gt;assertSame([PuzzleFixture::PUZZLE_500_01], $this-&gt;ids(…));</pre>
+    $browser-&gt;request('GET', '/api/v1/puzzles', ['query' =&gt; '<mark>RB-500-001</mark>']);
+
+    $this-&gt;assertResponseIsSuccessful();
+    $this-&gt;assertSame([PuzzleFixture::PUZZLE_500_01], $this-&gt;ids(/* the response */));
+}</pre>
   <p class="why"><span class="arrow">→</span> the test pins the <mark>request and the response</mark>. not the implementation.</p>
   <p class="why step"><span class="arrow">→</span> so I can change exactly one thing underneath, and know nothing else moved.</p>
   <div class="act">act 3 · feels slow</div>

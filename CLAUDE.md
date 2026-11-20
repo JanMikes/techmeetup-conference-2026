@@ -32,7 +32,7 @@ It is published as a static website. Everything shown comes from MySpeedPuzzling
 - Every new layout needs a mobile override `@media (pointer: coarse), (max-width: 860px)`. Check it at 390 px.
 - Use at most 3 `<mark>` per slide.
 - Code blocks get a language class for syntax highlighting: `<pre class="term php">` or `<pre class="term sql">` (deck.js tokenizes them at load). Shell, HTTP output and logs stay plain. Hand-made `<mark>`/`.k`/`.c` spans win over the automatic colours.
-- Code on slides must be **real code** from MSP (or Fantasy Academy), with the file path in `.file`. Any trimming is said in the notes. Facts and numbers must be verified against the repo, git or production data.
+- Code on slides must be **real code** from MSP (or Fantasy Academy), with the file path in `.file`. Any trimming is said in the notes. Where the details don't matter, replace them with a short PHP comment that says what's there, e.g. `new CollectionResponse(/* id, name, description, visibility */)`, rather than a bare `…`. SQL may be shortened the same way (`SELECT /* the columns */ FROM …`). Facts and numbers must be verified against the repo, git or production data.
 - The story flow is documented in `STRUCTURE.md` ("Iteration 5" table). Each section may only rely on what an earlier section explained.
 
 ## Useful commands
