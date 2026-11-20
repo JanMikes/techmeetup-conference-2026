@@ -1028,10 +1028,9 @@ request ─▶ …</pre>
 
 <section class="slide s-statement">
   <h3>WHY WORKER MODE MAKES PERFECT SENSE ON AN API</h3>
-  <h1>IT'S <mark>STATELESS</mark><br>ANYWAY.</h1>
-  <p class="after">(supposed to be.)</p>
+  <h1>IT'S <mark class="bad">(SUPPOSED TO BE)</mark><br><mark>STATELESS</mark> ANYWAY.</h1>
   <div class="act">act 2 · production</div>
-  <aside class="notes-src">"An API request carries everything it needs: the token, the parameters. No session, no cookie, nothing to remember between requests. So keeping the booted app in memory costs nothing." Then, slower: "<b>Supposed to be.</b>" Leave it hanging: the war story later is exactly where it wasn't.</aside>
+  <aside class="notes-src">"An API request carries everything it needs: the token, the parameters. No session, no cookie, nothing to remember between requests. So keeping the booted app in memory costs nothing." Read the red part with a wink: "<b>supposed to be</b>". Leave it hanging: the war story later is exactly where it wasn't.</aside>
 </section>
 
 <section class="slide">
@@ -1047,8 +1046,8 @@ worker    <span class="am">?</span></pre>
   <h3>REVEAL · BENCHMARK · GET /api/v1/me · p50, ONE USER</h3>
   <pre class="term xl">classic   ████████████████████████  23.6 ms
 worker    ███                        <mark>3.0 ms</mark></pre>
-  <div class="big step">8×</div>
-  <p class="sub step">20.7 ms of framework boot, saved on every request</p>
+  <div class="big">8×</div>
+  <p class="sub">20.7 ms of framework boot, saved on every request</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src"><b>Let it land.</b> Local benchmark (benchmark/results/RESULTS.md): same image, same 4 CPUs, same DB, only FRANKENPHP_WORKER differs. One client, sequential, the small /me endpoint: the pure framework-boot saving. Bigger endpoints gain less (2–4×), because their time is SQL and JSON. Production numbers are on the next slide.</aside>
 </section>
