@@ -1125,27 +1125,17 @@ worker    ███                        <mark>3.0 ms</mark></pre>
   <aside class="notes-src">Tell it straight. Click: "<b>I laughed.</b>" Then: "Six weeks later."</aside>
 </section>
 
-<section class="slide">
-  <h3>31 DEC 2025 · NEW YEAR'S EVE</h3>
-  <pre class="term">02:29  commit  "FrankenPHP Worker mode fix"
-<span class="step">02:33  deploy  <span class="rd">✗ failed</span></span>
-<span class="step">02:38  deploy  <span class="rd">✗ failed</span></span>
-<span class="step">03:09  deploy  <span class="rd">✗ failed</span></span>
-<span class="step">03:31  <mark>Re-run</mark></span>
-<span class="step">03:35  deploy  <span class="gr">✓ live</span>        <span class="dim"># and I went to sleep</span></span></pre>
-  <div class="act">act 2 · war story</div>
-  <aside class="notes-src">Reveal line by line. "Half past two. Three failed deploys. <b>Did I stop? I pressed Re-run.</b>" Source: GitHub Actions + Deployments API.</aside>
-</section>
-
 <section class="slide s-image">
-  <h2 class="visually-hidden">Deploy and go to sleep</h2>
-  <p class="cap top">03:35 · WORKER MODE: ON · GOOD NIGHT</p>
-  <img src="assets/memes/deploy-sleep-1440.webp"
-       srcset="assets/memes/deploy-sleep-960.webp 960w, assets/memes/deploy-sleep-1440.webp 1440w, assets/memes/deploy-sleep-1920.webp 1920w"
-       sizes="100vw" alt="A developer sleeping happily while a server room burns outside the window" width="1920" height="1097" decoding="async">
+  <h2 class="visually-hidden">31 Dec 2025: the commits and the deploy that went live</h2>
+  <p class="cap top">WORKER MODE: <mark>ON</mark> · GOOD NIGHT</p>
+  <img src="assets/img/nye-deploy-1440.webp"
+       srcset="assets/img/nye-deploy-960.webp 960w, assets/img/nye-deploy-1440.webp 1440w, assets/img/nye-deploy-1920.webp 1920w"
+       sizes="100vw" alt="GitHub: commits on 31 Dec 2025 at 02:29, 02:34 and 03:04 CET, and Release #942 re-run at 03:31:47 CET for commit 0f19226, status Success" width="1920" height="608" decoding="async">
   <p class="cap">what could <mark class="bad">possibly</mark> go wrong?</p>
+  <p class="source">github.com/MySpeedPuzzling/myspeedpuzzling.com · commits on 31 Dec 2025 · actions run 20610258850, attempt 2</p>
   <div class="act">act 2 · war story</div>
-  <aside class="notes-src">Don't talk. Let them laugh.</aside>
+  <aside class="notes-src">"New Year's Eve. <b>2:29 a.m.</b>: FrankenPHP worker mode fix. Then 2:34, then 3:04. Three deploys in a row <b>failed</b>. Did I stop? No. <b>I pressed Re-run.</b> 3:31, success, live at 3:35. And I went to sleep." Pause on the bottom line.
+  Facts: the deployed commit is 0f19226 (head of the night, includes d203a1a "FrankenPHP Worker mode fix"). Release runs for d203a1a, 742f0ca and 0f19226 failed at 02:36, 02:38 and 03:09; the re-run (attempt 2) of 0f19226 succeeded, 3m 30s. Timestamps shown in CET (GitHub renders relative times; converted for the screenshot).</aside>
 </section>
 
 <section class="slide s-image">
