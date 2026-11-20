@@ -313,3 +313,4 @@ The user confirmed that the cold-open flow works: intro → today's endpoint (Cl
 - After TRANSLATED AT THE EDGE: "THE PRAGMATIC VARIANT · NO TRY/CATCH": messenger: 'input' (API Platform unwraps HandlerFailedException) + exceptionToStatus [FirstTryAlreadyTaken => 422], or the global exception_to_status map.
 - War story: the 31 DEC deploy-log slide is cut. The "good night" slide now shows a real GitHub screenshot (the 31 Dec commits 02:29/02:34/03:04 CET plus Release #942, re-run 03:31:47 CET of 0f19226, Success) in place of the AI meme. The failed deploys are told in the notes.
 - The classic-PHP meme is cut; its line moved to the notes of WORKER MODE.
+- "HOW LONG UNTIL IT WAS REALLY FIXED?" is cut. The timeline moved to THE LESSON's notes; the upstream issue (#227, day 324) is shown only in the close.

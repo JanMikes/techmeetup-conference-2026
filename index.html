@@ -1149,18 +1149,6 @@ worker    ███                        <mark>3.0 ms</mark></pre>
 </section>
 
 <section class="slide">
-  <h3 class="predict">HOW LONG UNTIL IT WAS REALLY FIXED?</h3>
-  <pre class="term"><span class="step">~09:00   worker mode off, by hand on the server</span>
-<span class="step">1 Jan    15:16  fix #1: reset via reflection on a private property</span>
-<span class="step">3 Jan    17:07  <mark>fix #2: the real one</mark></span></pre>
-  <div class="big am step">3 days 14 h</div>
-  <p class="why step"><span class="arrow">→</span> and the upstream fix? reported the same afternoon. <mark>still open.</mark> day 324.</p>
-  <div class="act">act 2 · war story</div>
-  <aside class="notes-src">Ask for guesses first. Close with: "<b>Karma ships to production faster than I do.</b>"
-  Last click: "And upstream? I reported it the same afternoon." Pause. "<b>Still open.</b>" Don't name the bundle yet: the close reveals it (issue auth0/symfony #227, opened 31 Dec 2025 14:40 CET, 0 comments, checked 19 Nov 2026).</aside>
-</section>
-
-<section class="slide">
   <h3>THE LESSON</h3>
   <pre class="term warn">worker mode doesn't make your code stateful.
 <mark class="warn">it reveals it.</mark>
@@ -1170,7 +1158,8 @@ worker    ███                        <mark>3.0 ms</mark></pre>
 → stateless: true, everywhere
 → the rule lives in CLAUDE.md</pre>
   <div class="act">act 2 · war story</div>
-  <aside class="notes-src">"A worker without reset is a hotel that doesn't clean the rooms. The next guest finds the toothbrush… <b>and the previous guest's user id.</b>"</aside>
+  <aside class="notes-src">If asked how long the fix took: worker mode off by hand around 9 a.m., a first fix on 1 Jan, the real one on 3 Jan (3 days 14 h).
+  "A worker without reset is a hotel that doesn't clean the rooms. The next guest finds the toothbrush… <b>and the previous guest's user id.</b>"</aside>
 </section>
 
 <section class="slide s-statement">
