@@ -322,7 +322,6 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
     new Get(
         uriTemplate: '/v1/puzzles/{puzzleId}/leaderboard',
         <mark>provider</mark>: PuzzleLeaderboardResponseProvider::class,
-        parameters: [ <span class="c">/* filters — act 2 */</span> ],
     ),
 <span class="k">])]</span>
 <mark>final class</mark> PuzzleLeaderboardResponse
