@@ -115,7 +115,7 @@ Legend:
 | 49 || I | Meme: the puzzler who sweeps the puzzle back into the box after every piece | "**Every. Single. Request.**" |
 | 50 || C | **<mark>WORKER MODE</mark>** (ASCII): boot **once** → request, request, request… | FrankenPHP. One flag. |
 | 51 || D | **PREDICT.**<br>`GET /api/v1/me`, classic: **23.6 ms · 167 req/s**<br>Worker mode: ? | **Hands up:** 2×? 5×? 10×? |
-| 52 || D | **REVEAL** (bars): **3.0 ms · 2,368 req/s = 14×** | Let it land. |
+| 52 || D | **REVEAL** (bars): **/me p50 23.6 → 3.0 ms = 8×** (benchmark, one user) | Let it land. |
 | 53 || D | **ALL 8 ENDPOINTS** (narrow ASCII table): ping 5.7k req/s … the heavy 2 MB `/me/results` 22 → 39 | "Framework boot is a **fixed tax**. The faster your endpoint, the bigger the share you get back. A heavy query is still a heavy query." Production-like Docker on a laptop: **the ratios matter, not the absolute numbers.** |
 | 54 || D | **PRODUCTION, LAST 30 DAYS: p50 23 ms** over about 10M requests | "That's worker mode, in production, right now." |
 | 55 || S | **BUT.** | Tone change. |
@@ -275,7 +275,7 @@ Each chapter only uses what an earlier one explained. The promise (11) maps the 
 | 43–49 | **Act 2 · what comes in** | agenda → filters + 422 → pagination → body validation → limit of validation → thrown in the domain → translated at the edge | |
 | 50–53 | **Security** | 3 kinds of caller → who are you → what may you do | midpoint |
 | 54–56 | **Midpoint** | remember the world champions → record math (4 endpoints) → speaking of speed | |
-| 57–63 | **Worker mode** | PHP is slow → classic PHP meme → worker mode → predict → 14× → production 23 ms → PHP alive | "BUT." |
+| 57–63 | **Worker mode** | PHP is slow → classic PHP meme → worker mode → predict → 8× (benchmark, /me) → production 23 ms (all endpoints) → PHP alive | "BUT." |
 | 64–72 | **War story** | CineStar → 31 Dec deploy → sleep meme → inbox → one sign-on → 3 days 14 h → lesson → open loop | "how do I know before 50 emails?" |
 | 73–80 | **Act 3** | agenda → observability → the one alert → feels slow → the trap → one migration → test didn't move → what to log (agents audit) | |
 | 81–82 | **Callback** | "remember the example endpoint? · why it took 4 minutes" (merged into one slide; the PR resource slide is also "the example endpoint" now) | |

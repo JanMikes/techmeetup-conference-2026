@@ -1036,13 +1036,13 @@ worker    <span class="am">?</span></pre>
 </section>
 
 <section class="slide">
-  <h3>REVEAL · p50 LATENCY</h3>
+  <h3>REVEAL · BENCHMARK · GET /api/v1/me · p50, ONE USER</h3>
   <pre class="term xl">classic   ████████████████████████  23.6 ms
 worker    ███                        <mark>3.0 ms</mark></pre>
-  <div class="big step">14×</div>
-  <p class="sub step">167 → 2,368 requests per second</p>
+  <div class="big step">8×</div>
+  <p class="sub step">20.7 ms of framework boot, saved on every request</p>
   <div class="act">act 2 · production</div>
-  <aside class="notes-src"><b>Let it land.</b> Same image, same 4 CPUs, same DB. Only FRANKENPHP_WORKER differs.</aside>
+  <aside class="notes-src"><b>Let it land.</b> Local benchmark (benchmark/results/RESULTS.md): same image, same 4 CPUs, same DB, only FRANKENPHP_WORKER differs. One client, sequential, the small /me endpoint: the pure framework-boot saving. Bigger endpoints gain less (2–4×), because their time is SQL and JSON. Production numbers are on the next slide.</aside>
 </section>
 
 <section class="slide">
@@ -1051,7 +1051,7 @@ worker    ███                        <mark>3.0 ms</mark></pre>
     <div><span class="n">23 ms</span><span>p50</span></div>
     <div><span class="n">115 ms</span><span>p95</span></div>
   </div>
-  <p class="why"><span class="arrow">→</span> that's worker mode. in production. right now.</p>
+  <p class="why"><span class="arrow">→</span> worker mode in production, all endpoints. 3 ms was the lightest one, in a benchmark.</p>
   <div class="act">act 2 · production</div>
   <aside class="notes-src">Source: Sentry, all transactions, 30 days to 19 Nov 2026.</aside>
 </section>
