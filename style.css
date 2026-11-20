@@ -757,7 +757,9 @@ a.quiet:hover { color: var(--green); }
 .lyr-hd.l3 { color: var(--fg); border-bottom: 3px solid var(--dim); }
 .lyr-cell.l1 { background: color-mix(in srgb, var(--green) 9%, var(--panel)); border-color: color-mix(in srgb, var(--green) 35%, var(--line)); }
 .lyr-cell.l2 { background: color-mix(in srgb, var(--amber) 6%, var(--panel)); border-color: color-mix(in srgb, var(--amber) 25%, var(--line)); }
-.lyr-tag { font-family: var(--mono); font-size: 1.5rem; font-weight: 700; align-self: center; }
+.lyr-tag { font-family: var(--mono); font-size: 1.5rem; font-weight: 700; align-self: center; line-height: 1.1; }
+.lyr-tag { font-size: 1.25rem; }
+.lyr-tag.bl { font-size: 1.15rem; }
 .lyr-tag.gr { color: var(--green); }
 .lyr-tag.am { color: var(--amber); }
 .lyr-tag.bl { color: var(--dim); }
