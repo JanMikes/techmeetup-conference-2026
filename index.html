@@ -1026,6 +1026,14 @@ request ─▶ …</pre>
   <aside class="notes-src">"Classic PHP is a speed puzzler who sweeps the whole puzzle back into the box after every single piece: boot, build the container, route, every request. <b>Worker mode just… keeps the table.</b>" One env variable.</aside>
 </section>
 
+<section class="slide s-statement">
+  <h3>WHY WORKER MODE MAKES PERFECT SENSE ON AN API</h3>
+  <h1>IT'S <mark>STATELESS</mark><br>ANYWAY.</h1>
+  <p class="after">(supposed to be.)</p>
+  <div class="act">act 2 · production</div>
+  <aside class="notes-src">"An API request carries everything it needs: the token, the parameters. No session, no cookie, nothing to remember between requests. So keeping the booted app in memory costs nothing." Then, slower: "<b>Supposed to be.</b>" Leave it hanging: the war story later is exactly where it wasn't.</aside>
+</section>
+
 <section class="slide">
   <h3 class="predict">PREDICT</h3>
   <h2>GET /api/v1/me</h2>
