@@ -818,17 +818,28 @@ readonly final class CreateCheckoutSessionHandler
 </section>
 
 <section class="slide">
-  <h3>PAGINATION</h3>
+  <h3>PAGINATION · WHERE DO PAGE AND LIMIT COME FROM?</h3>
+  <pre class="term sm"><span class="gr">GET</span> /api/v1/puzzles/{puzzleId}/leaderboard?<mark>page=2&amp;limit=20</mark></pre>
   <p class="file">src/Api/V1/PuzzleLeaderboardResponseProvider.php · PR #477</p>
-  <pre class="term php">// PuzzleLeaderboardResponseProvider::provide()
-$offset  = ($page - 1) * $limit;
-$entries = array_slice($rows, $offset, $limit);
+  <pre class="term sm php">public function provide(Operation $operation, …): PuzzleLeaderboardResponse
+{
+    // declared as QueryParameter on the resource: validated, cast to int, defaults 1 / 20
+    $page  = $operation-&gt;<mark>getParameters()</mark>-&gt;get('page')-&gt;getValue();     // 2
+    $limit = $operation-&gt;getParameters()-&gt;get('limit')-&gt;getValue();    // 20
 
-return new PuzzleLeaderboardResponse(/* … */, total: count($rows), hasMore: /* … */);
-// → { "page": 1, "limit": 20, "total": 37, "has_more": true }</pre>
-  <p class="why"><span class="arrow">→</span> honest: hand-made. no Doctrine, so no Doctrine paginator.</p>
+    $attempts = $this-&gt;getPuzzleSolvers-&gt;soloByPuzzleId($puzzleId);  // the website's query
+    $rows     = $this-&gt;puzzlesSorter-&gt;groupPlayers($attempts);        // ranked in PHP
+
+    $offset  = ($page - 1) * $limit;                                   // 20
+    $entries = <mark>array_slice($rows, $offset, $limit)</mark>;                    // rows 21–40
+    return new PuzzleLeaderboardResponse(entries: $entries, total: count($rows), /* page, limit */
+        hasMore: $offset + count($entries) &lt; count($rows));
+}</pre>
+  <pre class="term sm"><span class="dim">→</span> { "page": 2, "limit": 20, "total": 37, "has_more": false, "entries": [ …17 ] }</pre>
   <div class="act">act 2 · production</div>
-  <aside class="notes-src">Bigger lists use opaque cursors. The price of no Doctrine: you write this yourself. It's five lines.</aside>
+  <aside class="notes-src">Walk it top to bottom: "The client asks for page 2. <b>page and limit are declared on the resource</b>, like the filters on the previous slide, so they arrive already validated and cast: page=0 or limit=1000 is a 422 before this code runs."
+  "The leaderboard is the website's query, ranked and grouped in PHP, so the slice happens in PHP too. No Doctrine, so no Doctrine paginator: <b>honest, it's hand-made, and it's five lines.</b>"
+  Real code: provide() reads them through a small intValue() helper over $operation-&gt;getParameters(), shown inline here; the type (solo/duo/team), first-try and country filters are skipped (sortByFastest, filterGroupedByAttempt, filterOutPrivateProfiles, filterByCountry). Bigger lists would use SQL LIMIT/OFFSET or opaque cursors.</aside>
 </section>
 
 <section class="slide">
