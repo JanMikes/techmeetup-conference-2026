@@ -304,3 +304,4 @@ The user confirmed that the cold-open flow works: intro → today's endpoint (Cl
 - The N+1 meme is cut; its bridge line ("ask the database the question the screen asks… one picture") moved to the notes of MEASURED.
 - THE LAYERS is rebuilt as colour-coded bands (HTTP knows the request · application no HTTP · domain/storage no HTTP). Each cell shows the request → and the response ← (Response DTO, Result DTO, rows, void). WRITE drops "Input" and adds "← Response DTO from the read side". A new WEB row shows the website Controller reusing the same Query & Command. The "HTTP lives in the first column" line is gone, because the bands say it.
 - END TO END · READ is split: ① the resource (MyCollectionsResponse) and ② the provider + the GetPlayerCollections SQL.
+- New slide after THE LAYERS: "SYNTAX SUGAR · THE GOOD KIND / THE MAGIC WE WANT": what API Platform does (magic) vs what I write (explicit), with "best of both worlds". It also answers "why not a controller".

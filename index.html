@@ -511,6 +511,43 @@ PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time cha
 </section>
 
 <section class="slide">
+  <h3>SYNTAX SUGAR · THE GOOD KIND</h3>
+  <h2>THE <mark>MAGIC</mark> WE WANT</h2>
+  <div class="cols magic">
+    <div>
+      <span class="label gr">MAGIC · API PLATFORM DOES IT</span>
+      <ul class="mlist">
+        <li>routing from <b>uriTemplate</b></li>
+        <li>security expressions per operation</li>
+        <li>JSON body → typed <b>Input DTO</b></li>
+        <li>validation → <b>422</b> with field paths</li>
+        <li>query parameters: typed, validated</li>
+        <li>DTO → JSON, the right status codes</li>
+        <li>errors as <b>problem+json</b></li>
+        <li><b>OpenAPI docs</b>, generated, can't drift</li>
+      </ul>
+    </div>
+    <div class="step">
+      <span class="label am">EXPLICIT · I WRITE IT</span>
+      <ul class="mlist ex">
+        <li>the resource: <b>the JSON shape</b></li>
+        <li>the provider: <b>which query</b></li>
+        <li>the processor: <b>which command</b></li>
+        <li>the handler: <b>the business rules</b></li>
+        <li>the SQL</li>
+      </ul>
+      <p class="mnote">no Request. no Response. plain PHP objects in, plain objects out.</p>
+    </div>
+  </div>
+  <p class="why step"><span class="arrow">→</span> magic for the boring HTTP, explicit for the business. <mark>the best of both worlds</mark>.</p>
+  <div class="act">act 1 · together</div>
+  <aside class="notes-src">"Some of you are thinking: attributes, conventions… <b>that's magic</b>. Yes. And it's the magic I want."
+  Left column: "All of this is the <b>boring, repetitive</b> part of every endpoint. API Platform does it the same way 38 times. I never write it, I never test it, and the docs can't lie because they come from the same declaration."
+  Click, right column: "Everything that is <b>mine</b> is explicit: the shape, the query, the command, the rules. My code never touches the HTTP request."
+  Click: "Magic where it's boring, explicit where it matters." (Why not a controller: you'd be writing the left column yourself, 38 times. The docs also recommend providers/processors over custom controllers.)</aside>
+</section>
+
+<section class="slide">
   <h3>END TO END · READ ① THE RESOURCE</h3>
   <p class="file">src/Api/V1/MyCollectionsResponse.php</p>
   <pre class="term sm php"><span class="k">#[ApiResource(</span>
