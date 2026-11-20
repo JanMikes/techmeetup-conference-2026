@@ -208,7 +208,7 @@ That's about 3 minutes, which brings the total to about 39. Confirm in the first
 - **Timing:** roughly +6 min → about 48 min. Needs cuts (candidates: 33, 52, 55, 82, lesson 4 folded into lesson 2).
 
 ## Iteration 3: why not CRUD (+4 slides, deck is 97)
-- 30–33, in Decision 2 after "what the user actually wants": "Anemic entity. Overworked client." → "I solved it!" the CRUD way (7 illustrative calls, 0 transactions) → what could go wrong (crash, race, PATCH later, new client) → the scenario way (1 call; 6 rules in one transaction + 7 reactions, from AddPuzzleSolvingTimeHandler and the PuzzleSolved listeners).
+- 30–33, in Decision 2 after "what the user actually wants": "Anemic entity. Overworked client." → "I solved a puzzle!" the CRUD way (7 illustrative calls, 0 transactions) → what could go wrong (crash, race, PATCH later, new client) → the scenario way (1 call; 6 rules in one transaction + 7 reactions, from AddPuzzleSolvingTimeHandler and the PuzzleSolved listeners).
 
 ## Iteration 4: gaps vs. the abstract (+18 slides, deck is 114)
 - 16–18: Hour 1: `composer require api` + route import, the whole api_platform.php (trimmed), VOCABULARY (resource, input, output, provider, processor)
@@ -231,7 +231,7 @@ Each section only uses what an earlier one explained.
 | 19–26 | **The default** ("school"): 4 lessons from the docs → two years later → meme → why it hurts in year 2 | | "one model: reads and writes fight over one class" |
 | 27 | **3 decisions from day 1**: answers the "why?" from FEB 2026 | | |
 | 28–30 | **Decision 1** the resource is not your entity: 0 entities, the PR resource | | |
-| 31–37 | **Decision 2** scenarios, not CRUD: publish vs PATCH → look at the box (screen → command → handler, 4 callers) → anemic entity → "I solved it!" CRUD way (7 calls) → what goes wrong → scenario way (1 call, 6 rules, 7 reactions) | | the write side is done; now the read side |
+| 31–37 | **Decision 2** scenarios, not CRUD: publish vs PATCH → look at the box (screen → command → handler, 4 callers) → anemic entity → "I solved a puzzle!" CRUD way (7 calls) → what goes wrong → scenario way (1 call, 6 rules, 7 reactions) | | the write side is done; now the read side |
 | 38–42 | **Decision 3** the read model: PR provider → predict → 9,210 vs 7 queries → N+1 meme | | "three decisions, one picture" |
 | 43–49 | **Putting it together**: layers diagram → end to end, read (resource, provider → SQL) → write (input + #[Assert], processor, ID before dispatch, handler) → "that was team A, five classes" | | "is that a lot?" |
 | 50–55 | **Team A vs team B**: pragmatic way → HandledStamp → $userId → table → hands up → my rule | | act 2: "is it any good?" |

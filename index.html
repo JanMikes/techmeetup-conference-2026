@@ -407,7 +407,7 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
 </section>
 
 <section class="slide">
-  <h3>WHY NOT CRUD? · "I SOLVED IT!" THE CRUD WAY</h3>
+  <h3>WHY NOT CRUD? · "I SOLVED A PUZZLE!" THE CRUD WAY</h3>
   <pre class="term bad sm"><span class="dim"># the first try of a puzzle (the client has to move the flag itself)</span>
 GET    /puzzle_solving_times?player=me&amp;puzzle=…&amp;first_attempt=true
 PATCH  /puzzle_solving_times/{old}    {"first_attempt": false}
@@ -426,17 +426,32 @@ PATCH  /puzzle_statistics/{id} …      <span class="dim"># the average time cha
 </section>
 
 <section class="slide">
-  <h3>"I SOLVED IT!" · THE SCENARIO WAY</h3>
+  <h3>"I SOLVED A PUZZLE!" · THE SCENARIO WAY</h3>
   <pre class="term">POST /api/v1/me/solving-times
 { "puzzle_id": "…", "time": "45:12", "first_attempt": true }</pre>
   <div class="cols">
     <div>
       <span class="label gr">6 RULES · ONE TRANSACTION</span>
-      <div class="ticks">same key = same save · no accidental twin · the round must be public · one first try per puzzle (the flag <i>moves</i>) · under 100 pieces/min · teammates resolved</div>
+      <ul class="mlist">
+        <li>same key = same save</li>
+        <li>no accidental twin</li>
+        <li>the round must be public</li>
+        <li>one first try per puzzle (the flag <i>moves</i>)</li>
+        <li>under 100 pieces/min</li>
+        <li>teammates resolved</li>
+      </ul>
     </div>
     <div class="step">
       <span class="label am">7 REACTIONS · AFTERWARDS</span>
-      <div class="ticks">badges for every teammate · XP · puzzle statistics · time predictions · duplicate scan · notify followers (privacy-aware) · off the wishlist</div>
+      <ul class="mlist re">
+        <li>badges for every teammate</li>
+        <li>XP</li>
+        <li>puzzle statistics</li>
+        <li>time predictions</li>
+        <li>duplicate scan</li>
+        <li>notify followers (privacy-aware)</li>
+        <li>off the wishlist</li>
+      </ul>
     </div>
   </div>
   <p class="why step"><span class="arrow">→</span> <mark>1 call.</mark> the rules live where every client has to pass.</p>

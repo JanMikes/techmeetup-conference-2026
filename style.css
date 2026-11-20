@@ -789,6 +789,7 @@ a.quiet:hover { color: var(--green); }
 .mlist li { padding-left: 1.6rem; position: relative; }
 .mlist li::before { content: "✓"; position: absolute; left: 0; color: var(--green); font-weight: 700; }
 .mlist.ex li::before { content: "✎"; color: var(--amber); }
+.mlist.re li::before { content: "↳"; color: var(--amber); }
 .mlist b { color: var(--fg); }
 .mnote { font-family: var(--mono); font-size: 1.05rem; color: var(--dim); margin-top: 0.4rem; }
 .cols.magic { margin-top: 0.6rem; }
