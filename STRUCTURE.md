@@ -308,3 +308,4 @@ The user confirmed that the cold-open flow works: intro → today's endpoint (Cl
 - THE LAYERS rows are now API READ · API WRITE · WEB READ (page → Controller → same Query/SQL) · WEB WRITE (form → Controller → same Command/Entity).
 - END TO END · READ is now three slides: ① the resource, ② the provider (the whole class with @implements), ③ the query (the whole GetPlayerCollections class, SQL verbatim).
 - Code pass: every code block shows its class/operation context, the key operation is marked, and details are /* comments */. The "WHERE DOES $userId COME FROM?" slide is cut, and team B no longer shows UserAware/WithUserId. The MSP way stays: the processor passes the player id explicitly.
+- After WRITE ③: a new statement "TEAM A · THIS WAS THE CLEAN WAY. or… even more pragmatic?", then team B ① the message (messenger: 'input') and ② the handler returning CheckoutSessionResponse (HandledStamp). The "that was team A" row is removed from the handler slide.

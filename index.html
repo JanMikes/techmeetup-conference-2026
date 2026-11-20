@@ -708,9 +708,17 @@ readonly final class CreateCollectionHandler
     }
 }</pre>
   <p class="why"><span class="arrow">→</span> the same handler serves the website form, the API and the CLI</p>
-  <p class="why step"><span class="arrow">→</span> that was <mark>team A</mark>: the clean way. five classes for one write.</p>
   <div class="act">act 1 · end to end</div>
-  <aside class="notes-src">"Five classes for one write. Is that a lot? <b>Hold that thought</b>, that's exactly the next question."</aside>
+  <aside class="notes-src">"Same handler for the website form, the API and the CLI." Then on to the next slide: five classes for one write.</aside>
+</section>
+
+<section class="slide s-statement">
+  <h3>TEAM A</h3>
+  <h1>THIS WAS THE<br><mark>CLEAN</mark> WAY.</h1>
+  <p class="after">input → processor → command → handler → response. five classes for one write.</p>
+  <p class="after">or… <b>even more pragmatic?</b> useful for <mark>pure APIs</mark>.</p>
+  <div class="act">act 1 · together</div>
+  <aside class="notes-src">"Five classes for one write. Is that a lot? For a public API with strangers on the other side, I think it's worth it. But there's a shorter way, and I use it too: useful for <b>pure APIs</b>, where the API is the only door and one frontend is the only client."</aside>
 </section>
 
 <section class="slide">
@@ -729,9 +737,34 @@ readonly final class CreateCheckoutSession
     ) {}
 }</pre>
   <p class="why"><span class="arrow">→</span> no processor. no mapping. the message <mark>is</mark> the resource.</p>
-  <p class="why step"><span class="arrow">→</span> the handler's return value becomes the response (API Platform reads the HandledStamp)</p>
   <div class="act">act 1 · together</div>
   <aside class="notes-src">"<b>Team B.</b> Another project of mine, open source too. The command carries the API attributes, API Platform dispatches it straight to the bus." (Trimmed: in Fantasy Academy a middleware fills in the user id. We skip that discussion: in MySpeedPuzzling the processor passes the player id explicitly, as on the previous slides.)</aside>
+</section>
+
+<section class="slide">
+  <h3>TEAM B · THE HANDLER RETURNS THE RESPONSE</h3>
+  <p class="file">Fantasy Academy · api/src/MessageHandler/Subscription/CreateCheckoutSessionHandler.php</p>
+  <pre class="term sm php">#[AsMessageHandler]
+readonly final class CreateCheckoutSessionHandler
+{
+    public function __invoke(CreateCheckoutSession $message): <mark>CheckoutSessionResponse</mark>
+    {
+        $user = $this-&gt;userRepository-&gt;getById(/* the logged-in user */);
+
+        /* … find or create the Stripe customer, pick the price for $message-&gt;plan */
+
+        $session = $this-&gt;stripeClient-&gt;createCheckoutSession(/* customer, price, urls, user */);
+
+        <mark>return new CheckoutSessionResponse</mark>(
+            checkoutUrl: $session-&gt;url,
+            sessionId: $session-&gt;sessionId,
+        );
+    }
+}</pre>
+  <p class="why"><span class="arrow">→</span> the return value <mark>is</mark> the response. API Platform reads it from Messenger's HandledStamp.</p>
+  <div class="act">act 1 · together</div>
+  <aside class="notes-src">"How does the response get back? API Platform's own Messenger processor takes the HandledStamp and serializes the handler's return value. <b>No processor, no mapping, no read-side call.</b>"
+  The price: the handler returns data, so it can't simply go async (that would be 202 + output: false). Trimmed: the Stripe customer creation, the price lookup and the success/cancel URLs.</aside>
 </section>
 
 <section class="slide s-statement">
