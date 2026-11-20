@@ -318,12 +318,7 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
 <section class="slide">
   <h3>THE EXAMPLE ENDPOINT · THE RESOURCE</h3>
   <p class="file">src/Api/V1/PuzzleLeaderboardResponse.php · PR #477</p>
-  <pre class="term sm php"><span class="k">#[ApiResource(operations: [</span>
-    new Get(
-        uriTemplate: '/v1/puzzles/{puzzleId}/leaderboard',
-        <mark>provider</mark>: PuzzleLeaderboardResponseProvider::class,
-    ),
-<span class="k">])]</span>
+  <pre class="term sm php"><span class="k">#[ApiResource(</span><span class="c">/* operations: the GET route + its provider */</span><span class="k">)]</span>
 <mark>final class</mark> PuzzleLeaderboardResponse
 {
     public function __construct(
@@ -336,7 +331,7 @@ $processor: "@api_platform.doctrine.orm.state.persist_processor"</pre>
 }</pre>
   <p class="why"><span class="arrow">→</span> one DTO = one response shape. no entity. no groups.</p>
   <div class="act">act 1 · easy part</div>
-  <aside class="notes-src">"This is what Claude wrote in the opening. <b>Serialization is just… a class.</b>" Trimmed for the slide, the real file is in the PR.</aside>
+  <aside class="notes-src">"This is what Claude wrote in the opening. <b>Serialization is just… a class.</b>" Trimmed for the slide: the operations (the GET route and its provider) are folded into a comment; the real file is in the PR.</aside>
 </section>
 
 <section class="slide s-statement">
